@@ -7,6 +7,14 @@
 		<RootNamespace>Grondo.Tests</RootNamespace>
 		<!-- Disable XML documentation for test project -->
 		<GenerateDocumentationFile>false</GenerateDocumentationFile>
+		<!-- Suppress analyzer rules that are not relevant for test projects -->
+		<!-- CA1707: Test methods use underscores by convention (Method_Scenario_Expected) -->
+		<!-- CA1304/CA1305/CA1311: Locale-sensitive operations are not a concern in tests -->
+		<!-- CA1822: Test methods cannot be static (MSTest requirement) -->
+		<!-- CA1852: Sealing test helper types adds no value -->
+		<!-- CA1861: Constant array arguments are acceptable in test methods -->
+		<!-- CA2201: Tests deliberately use System.Exception for testing -->
+		<NoWarn>$(NoWarn);CA1304;CA1305;CA1311;CA1707;CA1822;CA1852;CA1861;CA2201</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>

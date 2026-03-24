@@ -160,6 +160,30 @@
         public Result<T> ToResult(string errorMessage) =>
             HasValue ? Result<T>.Success(_value!) : Result<T>.Failure(errorMessage);
 
+        /// <summary>
+        /// Converts this <see cref="Maybe{T}"/> to an <see cref="Either{TLeft, T}"/>.
+        /// Some becomes Right; None becomes Left with the specified value.
+        /// </summary>
+        /// <typeparam name="TLeft">The type of the Left value.</typeparam>
+        /// <param name="leftValue">The Left value to use when no value is present.</param>
+        /// <returns>An Either with Right(value) if Some, or Left(leftValue) if None.</returns>
+        public Either<TLeft, T> ToEither<TLeft>(TLeft leftValue)
+        {
+            ArgumentNullException.ThrowIfNull(leftValue);
+            return HasValue
+                ? Either<TLeft, T>.FromRight(_value!)
+                : Either<TLeft, T>.FromLeft(leftValue);
+        }
+
+        /// <summary>
+        /// Converts this <see cref="Maybe{T}"/> to a <see cref="Validation{T}"/>.
+        /// Some becomes Valid; None becomes Invalid with the specified error message.
+        /// </summary>
+        /// <param name="errorMessage">The error message to use when no value is present.</param>
+        /// <returns>A valid Validation with the value, or an invalid Validation with the error.</returns>
+        public Validation<T> ToValidation(string errorMessage) =>
+            HasValue ? Validation<T>.Valid(_value!) : Validation<T>.Invalid(errorMessage);
+
         /// <summary>Returns a string representation of this instance.</summary>
         /// <returns>A string in the form "Some(value)" or "None".</returns>
         public override string ToString() =>

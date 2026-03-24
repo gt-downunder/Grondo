@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace Grondo
 {
@@ -230,6 +230,28 @@ namespace Grondo
         /// <returns>true if the eithers are not equal; otherwise, false.</returns>
         public static bool operator !=(Either<TLeft, TRight> left, Either<TLeft, TRight> right) =>
             !left.Equals(right);
+
+        /// <summary>
+        /// Converts this <see cref="Either{TLeft, TRight}"/> to a <see cref="Maybe{TRight}"/>.
+        /// Right becomes Some; Left becomes None (the Left value is discarded).
+        /// </summary>
+        /// <returns>A Maybe containing the Right value, or None.</returns>
+        public Maybe<TRight> ToMaybe() =>
+            IsRight ? Maybe<TRight>.Some(_right!) : Maybe<TRight>.None;
+
+        /// <summary>
+        /// Converts this <see cref="Either{TLeft, TRight}"/> to a <see cref="Result{TRight}"/>
+        /// using the specified function to convert the Left value to an error message.
+        /// </summary>
+        /// <param name="errorMapper">The function to convert the Left value to an error string.</param>
+        /// <returns>A successful Result with the Right value, or a failed Result with the mapped error.</returns>
+        public Result<TRight> ToResult(Func<TLeft, string> errorMapper)
+        {
+            ArgumentNullException.ThrowIfNull(errorMapper);
+            return IsRight
+                ? Result<TRight>.Success(_right!)
+                : Result<TRight>.Failure(errorMapper(_left!));
+        }
 
         /// <summary>
         /// Returns a string representation of this instance.

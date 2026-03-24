@@ -52,7 +52,7 @@ This makes Grondo primarily suitable for **ASP.NET Core applications** (web APIs
 
 ### [Extension Methods]({% link extensions.md %})
 
-29 extension method groups covering strings, collections, dates, JSON, HTTP, tasks, guards, async LINQ, memoization, and more.
+30 extension method classes covering strings, collections, dates, JSON, HTTP, tasks, guards, async LINQ, memoization, and more.
 
 ### [Custom Exceptions]({% link exceptions.md %})
 

@@ -1,4 +1,4 @@
-using BenchmarkDotNet.Attributes;
+﻿using BenchmarkDotNet.Attributes;
 using Grondo.Extensions;
 
 namespace Grondo.Benchmarks

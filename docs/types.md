@@ -100,6 +100,24 @@ string msg = await GetUserIdAsync()
         onFailure: err => $"Error: {err}");
 ```
 
+### Type Conversions
+
+```csharp
+Result<int> result = Result<int>.Success(42);
+
+// Result → Maybe (drops the error, keeps presence/absence)
+Maybe<int> maybe = result.ToMaybe();         // Some(42)
+Result<int>.Failure("err").ToMaybe();        // None
+
+// Result → Either (Success → Right, Failure → Left)
+Either<string, int> either = result.ToEither(); // Right(42)
+Result<int>.Failure("err").ToEither();          // Left("err")
+
+// Result → Validation (Success → Valid, Failure → Invalid)
+Validation<int> validation = result.ToValidation(); // Valid(42)
+Result<int>.Failure("err").ToValidation();          // Invalid(["err"])
+```
+
 ### Combining Results
 
 ```csharp
@@ -237,13 +255,19 @@ string message = age.Match(
 // "Age is 25"
 ```
 
-### Bridge to Result\<T\>
+### Type Conversions
 
 ```csharp
 Maybe<User> maybeUser = FindUser(42);
 
-// Convert Maybe to Result — None becomes a Failure
+// Maybe → Result (None becomes Failure with your error message)
 Result<User> result = maybeUser.ToResult("User not found");
+
+// Maybe → Either (None becomes Left with your value)
+Either<string, User> either = maybeUser.ToEither("User not found");
+
+// Maybe → Validation (None becomes Invalid with your error message)
+Validation<User> validation = maybeUser.ToValidation("User is required");
 
 // Then continue with the full Result pipeline
 string output = result
@@ -355,6 +379,22 @@ Either<string, User> user = await either.MapAsync(id => GetUserAsync(id));
 // Async bind
 Either<string, Profile> profile = await either.BindAsync(id =>
     GetProfileAsync(id));
+```
+
+### Type Conversions
+
+```csharp
+Either<string, int> either = Either<string, int>.FromRight(42);
+
+// Either → Maybe (Right becomes Some, Left is discarded)
+Maybe<int> maybe = either.ToMaybe();          // Some(42)
+
+// Either → Result (Left mapped to error string)
+Result<int> result = either.ToResult(err => $"Failed: {err}");
+// Success(42)
+
+Either<int, string>.FromLeft(404).ToResult(code => $"Error {code}");
+// Failure("Error 404")
 ```
 
 ### Use Cases

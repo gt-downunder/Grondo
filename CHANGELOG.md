@@ -9,6 +9,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.0] - 2026-03-24
+
+### Added
+
+#### Type Conversions
+- **`Result<T>`** — `ToMaybe()`, `ToEither()`, `ToValidation()` conversion methods
+- **`Maybe<T>`** — `ToEither(TLeft)`, `ToValidation(string)` conversion methods
+- **`Either<TLeft, TRight>`** — `ToMaybe()`, `ToResult(Func<TLeft, string>)` conversion methods
+- All functional types (`Result<T>`, `Maybe<T>`, `Either<L,R>`, `Validation<T>`) can now convert to each other
+
+### Changed
+
+- License changed from GPL-3.0 to MIT
+- Extension method count corrected from 29 to 30 in package metadata and documentation
+- README streamlined — removed duplicated content, added "Why Grondo?" section, linked to docs site
+- Updated `docs/types.md` with type conversion documentation and examples
+
+### Fixed
+
+- License badge in README now shows MIT instead of GPL v3
+- `PackageLicenseExpression` in `.csproj` updated from `GPL-3.0-or-later` to `MIT`
+- `LICENSE.md` copyright holder updated
+- Removed dead link to non-existent `.vscode/TASKS_GUIDE.md`
+
+---
+
 ## [1.1.0] - 2026-03-11
 
 ### Added
@@ -221,7 +247,8 @@ var memoized = expensiveFunction.Memoize();
 
 ---
 
-[Unreleased]: https://github.com/gt-downunder/dotnet-library/compare/v1.1.0...HEAD
-[1.1.0]: https://github.com/gt-downunder/dotnet-library/compare/v1.0.42...v1.1.0
-[1.0.0]: https://github.com/gt-downunder/dotnet-library/releases/tag/v1.0.0
+[Unreleased]: https://github.com/gt-downunder/Grondo/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/gt-downunder/Grondo/compare/v1.1.0...v1.2.0
+[1.1.0]: https://github.com/gt-downunder/Grondo/compare/v1.0.42...v1.1.0
+[1.0.0]: https://github.com/gt-downunder/Grondo/releases/tag/v1.0.0
 

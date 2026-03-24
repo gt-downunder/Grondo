@@ -185,6 +185,30 @@
         }
 
         /// <summary>
+        /// Converts this <see cref="Result{T}"/> to a <see cref="Maybe{T}"/>.
+        /// Returns <see cref="Maybe{T}.Some(T)"/> if successful; otherwise <see cref="Maybe{T}.None"/>.
+        /// </summary>
+        /// <returns>A Maybe containing the value if successful, or None.</returns>
+        public Maybe<T> ToMaybe() =>
+            IsSuccess ? Maybe<T>.Some(_value!) : Maybe<T>.None;
+
+        /// <summary>
+        /// Converts this <see cref="Result{T}"/> to an <see cref="Either{TLeft, TRight}"/>.
+        /// Success becomes Right; Failure becomes Left with the error message.
+        /// </summary>
+        /// <returns>An Either with Right(value) if successful, or Left(error).</returns>
+        public Either<string, T> ToEither() =>
+            IsSuccess ? Either<string, T>.FromRight(_value!) : Either<string, T>.FromLeft(_error!);
+
+        /// <summary>
+        /// Converts this <see cref="Result{T}"/> to a <see cref="Validation{T}"/>.
+        /// Success becomes Valid; Failure becomes Invalid with a single error.
+        /// </summary>
+        /// <returns>A Validation with the value if successful, or a single validation error.</returns>
+        public Validation<T> ToValidation() =>
+            IsSuccess ? Validation<T>.Valid(_value!) : Validation<T>.Invalid(_error!);
+
+        /// <summary>
         /// Returns a string representation of this result.
         /// </summary>
         /// <returns>A string in the form "Success(value)" or "Failure(error)".</returns>

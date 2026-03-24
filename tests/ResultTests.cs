@@ -1178,6 +1178,59 @@ namespace Grondo.Tests
             result.Value.Should().Be(42);
             log.Should().Be("started;validated;");
         }
+
+        // --- ToMaybe ---
+
+        [TestMethod]
+        public void ToMaybe_Success_ReturnsSome()
+        {
+            var maybe = Result<int>.Success(42).ToMaybe();
+            maybe.HasValue.Should().BeTrue();
+            maybe.Value.Should().Be(42);
+        }
+
+        [TestMethod]
+        public void ToMaybe_Failure_ReturnsNone()
+        {
+            var maybe = Result<int>.Failure("error").ToMaybe();
+            maybe.HasNoValue.Should().BeTrue();
+        }
+
+        // --- ToEither ---
+
+        [TestMethod]
+        public void ToEither_Success_ReturnsRight()
+        {
+            var either = Result<int>.Success(42).ToEither();
+            either.IsRight.Should().BeTrue();
+            either.Right.Should().Be(42);
+        }
+
+        [TestMethod]
+        public void ToEither_Failure_ReturnsLeftWithError()
+        {
+            var either = Result<int>.Failure("something broke").ToEither();
+            either.IsLeft.Should().BeTrue();
+            either.Left.Should().Be("something broke");
+        }
+
+        // --- ToValidation ---
+
+        [TestMethod]
+        public void ToValidation_Success_ReturnsValid()
+        {
+            var validation = Result<int>.Success(42).ToValidation();
+            validation.IsValid.Should().BeTrue();
+            validation.Value.Should().Be(42);
+        }
+
+        [TestMethod]
+        public void ToValidation_Failure_ReturnsInvalidWithError()
+        {
+            var validation = Result<int>.Failure("bad input").ToValidation();
+            validation.IsInvalid.Should().BeTrue();
+            validation.Errors.Should().ContainSingle().Which.Should().Be("bad input");
+        }
     }
 }
 

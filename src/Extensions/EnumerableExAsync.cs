@@ -1,4 +1,4 @@
-namespace Grondo.Extensions
+﻿namespace Grondo.Extensions
 {
     /// <summary>
     /// Provides asynchronous extension methods for <see cref="IEnumerable{T}"/>.

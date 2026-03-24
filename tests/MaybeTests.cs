@@ -189,6 +189,42 @@ namespace Grondo.Tests
             Maybe<string> maybe = (string?)null;
             maybe.HasNoValue.Should().BeTrue();
         }
+
+        // --- ToEither ---
+
+        [TestMethod]
+        public void ToEither_Some_ReturnsRight()
+        {
+            var either = Maybe<int>.Some(42).ToEither("no value");
+            either.IsRight.Should().BeTrue();
+            either.Right.Should().Be(42);
+        }
+
+        [TestMethod]
+        public void ToEither_None_ReturnsLeftWithProvidedValue()
+        {
+            var either = Maybe<int>.None.ToEither("no value");
+            either.IsLeft.Should().BeTrue();
+            either.Left.Should().Be("no value");
+        }
+
+        // --- ToValidation ---
+
+        [TestMethod]
+        public void ToValidation_Some_ReturnsValid()
+        {
+            var validation = Maybe<int>.Some(42).ToValidation("required");
+            validation.IsValid.Should().BeTrue();
+            validation.Value.Should().Be(42);
+        }
+
+        [TestMethod]
+        public void ToValidation_None_ReturnsInvalidWithError()
+        {
+            var validation = Maybe<int>.None.ToValidation("value is required");
+            validation.IsInvalid.Should().BeTrue();
+            validation.Errors.Should().ContainSingle().Which.Should().Be("value is required");
+        }
     }
 }
 
