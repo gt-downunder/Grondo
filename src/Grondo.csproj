@@ -27,19 +27,19 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <FrameworkReference Include="Microsoft.AspNetCore.App"/>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
     </ItemGroup>
 
     <!-- Source Link now in Directory.Build.props -->
     <!-- MinVer: Semantic versioning from Git tags -->
     <ItemGroup>
-        <PackageReference Include="MinVer" Version="6.*" PrivateAssets="All"/>
+        <PackageReference Include="MinVer" Version="7.0.0" PrivateAssets="All" />
     </ItemGroup>
 
     <!-- Include README and LICENSE in the NuGet package -->
     <ItemGroup>
-        <None Include="..\README.md" Pack="true" PackagePath="\"/>
-        <None Include="..\LICENSE.md" Pack="true" PackagePath="\"/>
+        <None Include="..\README.md" Pack="true" PackagePath="\" />
+        <None Include="..\LICENSE.md" Pack="true" PackagePath="\" />
     </ItemGroup>
 
 </Project>

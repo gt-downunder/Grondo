@@ -43,7 +43,7 @@ namespace Grondo.Extensions
                 order = Math.Min(order, suffixes.Length - 1);
                 double value = abs / Math.Pow(divisor, order);
 
-                string formatted = value % 1 == 0
+                string formatted = Math.Abs(value - Math.Round(value)) < 0.01
                     ? value.ToString("F0", System.Globalization.CultureInfo.InvariantCulture)
                     : value.ToString("F1", System.Globalization.CultureInfo.InvariantCulture);
                 return bytes < 0 ? $"-{formatted} {suffixes[order]}" : $"{formatted} {suffixes[order]}";

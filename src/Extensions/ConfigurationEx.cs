@@ -82,7 +82,15 @@ namespace Grondo.Extensions
                 {
                     return (T)Convert.ChangeType(value, typeof(T), System.Globalization.CultureInfo.InvariantCulture);
                 }
-                catch
+                catch (InvalidCastException)
+                {
+                    return defaultValue;
+                }
+                catch (FormatException)
+                {
+                    return defaultValue;
+                }
+                catch (OverflowException)
                 {
                     return defaultValue;
                 }

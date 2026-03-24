@@ -88,13 +88,7 @@
                 ArgumentNullException.ThrowIfNull(source);
                 ArgumentNullException.ThrowIfNull(func);
 
-                int index = 0;
-                foreach (T? item in source)
-                {
-                    if (!func(item, index++)) return false;
-                }
-
-                return true;
+                return source.Select((item, index) => func(item, index)).All(result => result);
             }
 
             /// <summary>
@@ -403,11 +397,7 @@
             {
                 ArgumentNullException.ThrowIfNull(source);
 
-                foreach (T? item in source)
-                {
-                    if (item is not null)
-                        yield return item;
-                }
+                return source.Where(item => item is not null)!;
             }
         }
     }

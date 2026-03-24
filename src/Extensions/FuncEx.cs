@@ -43,6 +43,7 @@ namespace Grondo.Extensions
                     lock (lockObj)
                     {
                         cts?.Cancel();
+                        cts?.Dispose();
                         cts = new CancellationTokenSource();
 
                         Task.Delay(delay, cts.Token)
@@ -118,6 +119,7 @@ namespace Grondo.Extensions
                     {
                         lastArg = arg;
                         cts?.Cancel();
+                        cts?.Dispose();
                         cts = new CancellationTokenSource();
 
                         Task.Delay(delay, cts.Token)

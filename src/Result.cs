@@ -413,7 +413,7 @@
             {
                 return Result<T>.Success(func());
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is not OutOfMemoryException && ex is not StackOverflowException)
             {
                 return Result<T>.Failure(ex.Message);
             }
@@ -431,7 +431,7 @@
             {
                 return Result<T>.Success(await func().ConfigureAwait(false));
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is not OutOfMemoryException && ex is not StackOverflowException)
             {
                 return Result<T>.Failure(ex.Message);
             }
@@ -449,7 +449,7 @@
                 action();
                 return Result.Success();
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is not OutOfMemoryException && ex is not StackOverflowException)
             {
                 return Result.Failure(ex.Message);
             }
@@ -467,7 +467,7 @@
                 await func().ConfigureAwait(false);
                 return Result.Success();
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is not OutOfMemoryException && ex is not StackOverflowException)
             {
                 return Result.Failure(ex.Message);
             }

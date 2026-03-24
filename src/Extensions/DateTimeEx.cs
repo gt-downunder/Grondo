@@ -39,7 +39,7 @@ namespace Grondo.Extensions
             /// <param name="weeks">The number of weeks to add.</param>
             /// <returns>A new <see cref="DateTime"/> offset by the specified number of weeks.</returns>
             public DateTime AddWeeks(int weeks) =>
-                date.AddDays(weeks * 7);
+                date.AddDays((double)weeks * 7);
 
             /// <summary>
             /// Returns a new <see cref="DateTime"/> with milliseconds truncated.

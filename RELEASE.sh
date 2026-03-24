@@ -36,24 +36,69 @@ echo "🚀 Grondo Release Script"
 echo "================================"
 echo "Version: v$VERSION"
 echo ""
+echo "🔍 Pre-release verification:"
+echo "   - Code formatting check"
+echo "   - Comprehensive code analysis"
+echo "   - All unit tests"
+echo "   - NuGet package creation"
+echo ""
 echo "✨ GitHub Actions will automatically:"
 echo "   - Build the solution"
 echo "   - Run all tests"
 echo "   - Create NuGet package"
 echo "   - Publish to NuGet.org"
 echo ""
-echo "This script only commits and pushes the tag."
+echo "This script commits and pushes the tag."
 echo ""
 
 # Step 1: Verify everything is ready
 echo "Step 1: Running final verification..."
-dotnet clean
-dotnet build -c Release
-dotnet test -c Release --verbosity minimal
-dotnet pack -c Release
-
 echo ""
-echo "✅ Verification complete!"
+
+# Clean build artifacts
+echo "🧹 Cleaning build artifacts..."
+dotnet clean
+echo ""
+
+# Check code formatting
+echo "📐 Checking code formatting..."
+if ! dotnet format Grondo.sln --verify-no-changes --verbosity quiet; then
+    echo "❌ Code formatting issues detected!"
+    echo "Run 'dotnet format Grondo.sln' to fix formatting issues."
+    exit 1
+fi
+echo "✅ Code formatting verified!"
+echo ""
+
+# Run comprehensive analyzers
+echo "🔍 Running comprehensive code analyzers..."
+if ! dotnet build Grondo.sln -c Release "/p:AnalysisMode=All" "/p:TreatWarningsAsErrors=true"; then
+    echo "❌ Code analysis failed!"
+    echo "Fix all analyzer warnings before releasing."
+    exit 1
+fi
+echo "✅ Code analysis passed!"
+echo ""
+
+# Run tests
+echo "🧪 Running tests..."
+if ! dotnet test -c Release --verbosity minimal --no-build; then
+    echo "❌ Tests failed!"
+    exit 1
+fi
+echo "✅ All tests passed!"
+echo ""
+
+# Create package
+echo "📦 Creating NuGet package..."
+if ! dotnet pack -c Release --no-build; then
+    echo "❌ Package creation failed!"
+    exit 1
+fi
+echo "✅ Package created!"
+echo ""
+
+echo "✅ All verification checks passed!"
 echo ""
 
 # Step 2: Show current status

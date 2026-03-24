@@ -103,12 +103,9 @@
 
                 var existing = new HashSet<string>(list, StringComparer.OrdinalIgnoreCase);
 
-                foreach (string item in range)
+                foreach (string item in range.Where(item => existing.Add(item)))
                 {
-                    if (existing.Add(item))
-                    {
-                        list.Add(item);
-                    }
+                    list.Add(item);
                 }
 
                 return list;

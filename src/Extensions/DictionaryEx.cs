@@ -39,12 +39,7 @@ namespace Grondo.Extensions
             {
                 if (keyList is null) return false;
 
-                foreach (TKey? key in keyList)
-                {
-                    if (key is not null && source.ContainsKey(key)) return true;
-                }
-
-                return false;
+                return keyList.Where(key => key is not null).Any(key => source.ContainsKey(key!));
             }
 
             /// <summary>
@@ -102,10 +97,9 @@ namespace Grondo.Extensions
                 ArgumentNullException.ThrowIfNull(source);
                 ArgumentNullException.ThrowIfNull(other);
 
-                foreach (KeyValuePair<TKey, TValue> kvp in other)
+                foreach (KeyValuePair<TKey, TValue> kvp in other.Where(kvp => overwrite || !source.ContainsKey(kvp.Key)))
                 {
-                    if (overwrite || !source.ContainsKey(kvp.Key))
-                        source[kvp.Key] = kvp.Value;
+                    source[kvp.Key] = kvp.Value;
                 }
             }
 
