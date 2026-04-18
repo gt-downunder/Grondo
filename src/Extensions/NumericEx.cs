@@ -65,7 +65,7 @@ namespace Grondo.Extensions
             /// <param name="total">The total value that represents 100%.</param>
             /// <returns>The percentage of <paramref name="total"/>, or 0 when <paramref name="total"/> is 0.</returns>
             public double PercentageOf(double total) =>
-                total == 0 ? 0 : number / total * 100d;
+                Math.Abs(total) < double.Epsilon ? 0d : number / total * 100d;
         }
 
         extension(decimal number)

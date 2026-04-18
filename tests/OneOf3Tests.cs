@@ -11,7 +11,7 @@ namespace Grondo.Tests
         {
             OneOf<int, string, Guid> a = OneOf<int, string, Guid>.FromT0(1);
             OneOf<int, string, Guid> b = OneOf<int, string, Guid>.FromT1("x");
-            OneOf<int, string, Guid> c = OneOf<int, string, Guid>.FromT2(Guid.Empty.Equals(Guid.Empty) ? Guid.NewGuid() : Guid.Empty);
+            OneOf<int, string, Guid> c = OneOf<int, string, Guid>.FromT2(Guid.NewGuid());
 
             a.IsT0.Should().BeTrue();
             b.IsT1.Should().BeTrue();
@@ -59,8 +59,8 @@ namespace Grondo.Tests
         public void AsTN_WrongSlot_Throws()
         {
             OneOf<int, string, double> one = 1;
-            ((Action)(() => { var _ = one.AsT1; })).Should().Throw<InvalidOperationException>();
-            ((Action)(() => { var _ = one.AsT2; })).Should().Throw<InvalidOperationException>();
+            ((Action)(() => { _ = one.AsT1; })).Should().Throw<InvalidOperationException>();
+            ((Action)(() => { _ = one.AsT2; })).Should().Throw<InvalidOperationException>();
         }
 
         [TestMethod]

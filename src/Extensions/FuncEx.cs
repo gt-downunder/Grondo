@@ -43,14 +43,21 @@ namespace Grondo.Extensions
                     lock (lockObj)
                     {
                         cts?.Cancel();
-                        cts?.Dispose();
-                        cts = new CancellationTokenSource();
+                        CancellationTokenSource newCts = new();
+                        cts = newCts;
 
-                        Task.Delay(delay, cts.Token)
+                        Task.Delay(delay, newCts.Token)
                             .ContinueWith(t =>
                             {
-                                if (!t.IsCanceled)
-                                    action();
+                                try
+                                {
+                                    if (!t.IsCanceled)
+                                        action();
+                                }
+                                finally
+                                {
+                                    newCts.Dispose();
+                                }
                             }, TaskScheduler.Default);
                     }
                 };
@@ -119,14 +126,21 @@ namespace Grondo.Extensions
                     {
                         lastArg = arg;
                         cts?.Cancel();
-                        cts?.Dispose();
-                        cts = new CancellationTokenSource();
+                        CancellationTokenSource newCts = new();
+                        cts = newCts;
 
-                        Task.Delay(delay, cts.Token)
+                        Task.Delay(delay, newCts.Token)
                             .ContinueWith(t =>
                             {
-                                if (!t.IsCanceled && lastArg != null)
-                                    action(lastArg);
+                                try
+                                {
+                                    if (!t.IsCanceled && lastArg != null)
+                                        action(lastArg);
+                                }
+                                finally
+                                {
+                                    newCts.Dispose();
+                                }
                             }, TaskScheduler.Default);
                     }
                 };

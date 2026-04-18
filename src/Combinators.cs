@@ -33,14 +33,7 @@
         {
             ArgumentNullException.ThrowIfNull(source);
             ArgumentNullException.ThrowIfNull(selector);
-            var values = new List<TResult>();
-            foreach (T item in source)
-            {
-                Result<TResult> r = selector(item);
-                if (r.IsFailure) return Result<IReadOnlyList<TResult>>.Failure(r.Error);
-                values.Add(r.Value);
-            }
-            return Result<IReadOnlyList<TResult>>.Success(values);
+            return Sequence(source.Select(selector));
         }
 
         /// <summary>
@@ -68,14 +61,7 @@
         {
             ArgumentNullException.ThrowIfNull(source);
             ArgumentNullException.ThrowIfNull(selector);
-            var values = new List<TResult>();
-            foreach (T item in source)
-            {
-                Maybe<TResult> m = selector(item);
-                if (m.HasNoValue) return Maybe<IReadOnlyList<TResult>>.None;
-                values.Add(m.Value);
-            }
-            return Maybe<IReadOnlyList<TResult>>.Some(values);
+            return Sequence(source.Select(selector));
         }
 
         /// <summary>
@@ -106,17 +92,7 @@
         {
             ArgumentNullException.ThrowIfNull(source);
             ArgumentNullException.ThrowIfNull(selector);
-            var values = new List<TResult>();
-            var errors = new List<string>();
-            foreach (T item in source)
-            {
-                Validation<TResult> v = selector(item);
-                if (v.IsValid) values.Add(v.Value);
-                else errors.AddRange(v.Errors);
-            }
-            return errors.Count > 0
-                ? Validation<IReadOnlyList<TResult>>.Invalid(errors)
-                : Validation<IReadOnlyList<TResult>>.Valid(values);
+            return Sequence(source.Select(selector));
         }
 
         /// <summary>

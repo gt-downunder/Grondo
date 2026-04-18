@@ -61,7 +61,7 @@ namespace Grondo.Tests
         public void AsTN_WrongSlot_Throws()
         {
             OneOf<int, string, double, bool> one = 1;
-            ((Action)(() => { var _ = one.AsT3; })).Should().Throw<InvalidOperationException>();
+            ((Action)(() => { _ = one.AsT3; })).Should().Throw<InvalidOperationException>();
         }
 
         [TestMethod]

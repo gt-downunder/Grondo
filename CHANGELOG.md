@@ -5,7 +5,47 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.0] - Unreleased
+## [2.0.1] - 2026-04-18
+
+### Fixed
+
+- **NuGet packaging:** restored the `<ItemGroup>` that includes `README.md` and
+  `LICENSE.md` in the `.nupkg`. `dotnet pack` was failing with `NU5039` because
+  the readme referenced by `<PackageReadmeFile>` was no longer being packed.
+- **Resource leak in `FuncEx.Debounce` / `FuncEx.Debounce<T>`:** the last
+  scheduled `CancellationTokenSource` was never disposed (previous CTS was
+  disposed on the next invocation, leaving the final one dangling). Disposal is
+  now tied to the delay task's continuation via a `try`/`finally`, so each CTS
+  is disposed exactly once whether the delay completes or is cancelled.
+- **Floating-point equality in `NumericEx.PercentageOf(double)`:** replaced the
+  exact `total == 0` check with `Math.Abs(total) < double.Epsilon`. IEEE-754
+  equivalent for detecting zero (no non-zero double is smaller than
+  `double.Epsilon`), but silences the static-analysis warning.
+
+### Changed
+
+- **`GuardEx.ThrowIfTooShort`** no longer includes a dead `value is null ? 0 : value.Length`
+  branch in its error message — the surrounding `value?.Length < minLength`
+  guard already ensures `value` is non-null on that path.
+- **`ConfigurationEx.GetRequiredValue<T>`** narrows its `catch` to
+  `InvalidCastException`, `FormatException`, and `OverflowException`, matching
+  the sibling `GetValue<T>`. Unrelated exceptions (`OutOfMemoryException`,
+  custom `TypeConverter` exceptions, etc.) now propagate instead of being
+  wrapped in `InvalidOperationException`.
+- **`Combinators.Traverse`** (for `Result<T>`, `Maybe<T>`, `Validation<T>`)
+  simplified to `Sequence(source.Select(selector))` — same behavior, less code.
+- **`EnumerableEx.HasDuplicates`** simplified to `source.Any(item => !seen.Add(item))`.
+- **`StringEx.ToPascalCase`** and **`StringEx.RemoveDiacritics`** use LINQ
+  `Where(...)` for filtering inside their `StringBuilder` loops.
+- **README** now documents both release scripts (`RELEASE.sh` for bash/WSL and
+  `RELEASE.ps1` for PowerShell) and notes that they are equivalent.
+- **Tests:** minor hygiene — `var _ = ...` discards changed to `_ = ...`,
+  `StreamReader` in middleware tests is now disposed, and a redundant
+  `Guid.Empty.Equals(Guid.Empty)` in a `OneOf3` test was removed.
+
+---
+
+## [2.0.0] - 2026-04-18
 
 ### Breaking Changes
 
@@ -329,7 +369,9 @@ var memoized = expensiveFunction.Memoize();
 
 ---
 
-[Unreleased]: https://github.com/gt-downunder/Grondo/compare/v1.2.1...HEAD
+[Unreleased]: https://github.com/gt-downunder/Grondo/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/gt-downunder/Grondo/compare/v2.0.0...v2.0.1
+[2.0.0]: https://github.com/gt-downunder/Grondo/compare/v1.2.1...v2.0.0
 [1.2.0]: https://github.com/gt-downunder/Grondo/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/gt-downunder/Grondo/compare/v1.0.42...v1.1.0
 [1.0.0]: https://github.com/gt-downunder/Grondo/releases/tag/v1.0.0

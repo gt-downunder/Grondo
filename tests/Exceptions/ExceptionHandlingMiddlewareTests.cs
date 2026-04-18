@@ -21,7 +21,8 @@ namespace Grondo.Tests.Exceptions
             await middleware.InvokeAsync(context);
 
             ms.Position = 0;
-            string body = await new StreamReader(ms, Encoding.UTF8).ReadToEndAsync();
+            using var reader = new StreamReader(ms, Encoding.UTF8);
+            string body = await reader.ReadToEndAsync();
             return (context.Response.StatusCode, context.Response.ContentType ?? string.Empty, body);
         }
 

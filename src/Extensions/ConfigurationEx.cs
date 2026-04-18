@@ -117,11 +117,9 @@ namespace Grondo.Extensions
                 {
                     return (T)Convert.ChangeType(value, typeof(T), System.Globalization.CultureInfo.InvariantCulture);
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ex is InvalidCastException or FormatException or OverflowException)
                 {
-                    throw new InvalidOperationException(
-                        $"Cannot convert configuration key '{key}' to type {typeof(T).Name}",
-                        ex);
+                    throw new InvalidOperationException($"Cannot convert configuration key '{key}' to type {typeof(T).Name}", ex);
                 }
             }
 

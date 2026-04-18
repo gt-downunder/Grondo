@@ -349,9 +349,8 @@ namespace Grondo.Extensions
                 if (words.Length == 0) return string.Empty;
 
                 var sb = new StringBuilder();
-                foreach (string word in words)
+                foreach (string word in words.Where(w => w.Length > 0))
                 {
-                    if (word.Length == 0) continue;
                     sb.Append(char.ToUpperInvariant(word[0]));
                     sb.Append(word[1..].ToLowerInvariant());
                 }
@@ -401,10 +400,11 @@ namespace Grondo.Extensions
 
                 string normalized = value.Normalize(System.Text.NormalizationForm.FormD);
                 var sb = new StringBuilder(normalized.Length);
-                foreach (char c in normalized)
+                foreach (char c in normalized.Where(c =>
+                    System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c)
+                        != System.Globalization.UnicodeCategory.NonSpacingMark))
                 {
-                    if (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) != System.Globalization.UnicodeCategory.NonSpacingMark)
-                        sb.Append(c);
+                    sb.Append(c);
                 }
 
                 return sb.ToString().Normalize(System.Text.NormalizationForm.FormC);

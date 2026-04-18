@@ -394,11 +394,7 @@
                 ArgumentNullException.ThrowIfNull(source);
 
                 var seen = new HashSet<T>();
-                foreach (T item in source)
-                {
-                    if (!seen.Add(item)) return true;
-                }
-                return false;
+                return source.Any(item => !seen.Add(item));
             }
 
             /// <summary>

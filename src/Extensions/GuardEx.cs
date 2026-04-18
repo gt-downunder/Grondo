@@ -82,7 +82,7 @@ namespace Grondo.Extensions
 
                 if (value?.Length < minLength)
                     throw new ArgumentException(
-                        $"Value must be at least {minLength} characters. Actual: {(value is null ? 0 : value.Length)}",
+                        $"Value must be at least {minLength} characters. Actual: {value.Length}",
                         paramName);
 
                 return value!;

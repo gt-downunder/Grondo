@@ -112,9 +112,20 @@ dotnet run --project benchmarks -c Release -- --filter "*StringEx*"
 
 Grondo uses an automated release process with GitHub Actions. See [.github/RELEASE_GUIDE.md](.github/RELEASE_GUIDE.md) for complete release documentation.
 
+Two equivalent release scripts are provided — pick whichever matches your shell. Both commit `CHANGELOG.md`, tag the release, and push; GitHub Actions then builds, tests, and publishes to NuGet.
+
+**Linux / macOS / WSL (bash):**
+
 ```bash
 # Update CHANGELOG.md first, then:
 ./RELEASE.sh <version>    # e.g. ./RELEASE.sh 2.0.0
+```
+
+**Windows (PowerShell):**
+
+```powershell
+# Update CHANGELOG.md first, then:
+.\RELEASE.ps1 <version>   # e.g. .\RELEASE.ps1 2.0.0
 ```
 
 ## Documentation
