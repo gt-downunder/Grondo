@@ -28,7 +28,7 @@
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(length);
 
-            var chars = includeSpecialChars ? AllChars : AlphanumericChars;
+            string chars = includeSpecialChars ? AllChars : AlphanumericChars;
 
             return string.Create(length, chars, static (span, chars) =>
             {

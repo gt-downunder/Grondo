@@ -85,7 +85,7 @@ namespace Grondo.Tests
         public void Match_DispatchesOnSuccess()
         {
             var r = Result<int, Error>.Success(5);
-            var s = r.Match(v => $"ok:{v}", e => $"err:{e.Code}");
+            string s = r.Match(v => $"ok:{v}", e => $"err:{e.Code}");
             s.Should().Be("ok:5");
         }
 
@@ -93,7 +93,7 @@ namespace Grondo.Tests
         public void Match_DispatchesOnFailure()
         {
             var r = Result<int, Error>.Failure(Error.NotFound());
-            var s = r.Match(v => "ok", e => e.Code);
+            string s = r.Match(v => "ok", e => e.Code);
             s.Should().Be("not_found");
         }
 

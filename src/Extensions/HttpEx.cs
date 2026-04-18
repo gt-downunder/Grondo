@@ -123,7 +123,7 @@ namespace Grondo.Extensions
             {
                 ArgumentNullException.ThrowIfNull(request);
 
-                return request.Headers["X-Requested-With"] == "XMLHttpRequest";
+                return request.Headers.XRequestedWith == "XMLHttpRequest";
             }
 
             /// <summary>
@@ -135,10 +135,10 @@ namespace Grondo.Extensions
                 ArgumentNullException.ThrowIfNull(request);
 
                 // Check X-Forwarded-For header first (for proxies/load balancers)
-                var forwardedFor = request.Headers["X-Forwarded-For"].FirstOrDefault();
+                string? forwardedFor = request.Headers["X-Forwarded-For"].FirstOrDefault();
                 if (!string.IsNullOrEmpty(forwardedFor))
                 {
-                    var ips = forwardedFor.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                    string[] ips = forwardedFor.Split(',', StringSplitOptions.RemoveEmptyEntries);
                     return ips[0].Trim();
                 }
 

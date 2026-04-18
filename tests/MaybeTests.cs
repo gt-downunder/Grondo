@@ -86,14 +86,14 @@ namespace Grondo.Tests
         [TestMethod]
         public void Match_Some_CallsSomeBranch()
         {
-            var result = Maybe<int>.Some(42).Match(v => $"Value: {v}", () => "Nothing");
+            string result = Maybe<int>.Some(42).Match(v => $"Value: {v}", () => "Nothing");
             result.Should().Be("Value: 42");
         }
 
         [TestMethod]
         public void Match_None_CallsNoneBranch()
         {
-            var result = Maybe<int>.None.Match(v => $"Value: {v}", () => "Nothing");
+            string result = Maybe<int>.None.Match(v => $"Value: {v}", () => "Nothing");
             result.Should().Be("Nothing");
         }
 

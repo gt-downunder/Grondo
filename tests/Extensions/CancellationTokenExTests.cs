@@ -37,7 +37,7 @@ namespace Grondo.Tests.Extensions
             using var outer = new CancellationTokenSource();
             using CancellationTokenSource linked = outer.Token.WithTimeout(TimeSpan.FromMilliseconds(50));
 
-            await Task.Delay(150, TestContext.CancellationToken);
+            await linked.Token.AsTask().ContinueWith(_ => { }, TaskContinuationOptions.ExecuteSynchronously);
 
             linked.Token.IsCancellationRequested.Should().BeTrue();
         }

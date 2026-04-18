@@ -74,7 +74,7 @@ namespace Grondo.Extensions
                 ArgumentNullException.ThrowIfNull(configuration);
                 ArgumentException.ThrowIfNullOrWhiteSpace(key);
 
-                var value = configuration[key];
+                string? value = configuration[key];
                 if (string.IsNullOrWhiteSpace(value))
                     return defaultValue;
 
@@ -109,7 +109,7 @@ namespace Grondo.Extensions
                 ArgumentNullException.ThrowIfNull(configuration);
                 ArgumentException.ThrowIfNullOrWhiteSpace(key);
 
-                var value = configuration[key];
+                string? value = configuration[key];
                 if (string.IsNullOrWhiteSpace(value))
                     throw new InvalidOperationException($"Configuration key '{key}' is missing or empty.");
 

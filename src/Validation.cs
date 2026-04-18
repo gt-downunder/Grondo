@@ -255,7 +255,7 @@ namespace Grondo
 
             var hash = new HashCode();
             hash.Add(IsValid);
-            foreach (var error in _errors!)
+            foreach (string error in _errors!)
                 hash.Add(error);
             return hash.ToHashCode();
         }

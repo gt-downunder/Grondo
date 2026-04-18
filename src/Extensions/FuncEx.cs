@@ -36,7 +36,7 @@ namespace Grondo.Extensions
                 ArgumentNullException.ThrowIfNull(action);
 
                 CancellationTokenSource? cts = null;
-                var lockObj = new object();
+                object lockObj = new();
 
                 return () =>
                 {
@@ -67,7 +67,7 @@ namespace Grondo.Extensions
                 ArgumentNullException.ThrowIfNull(action);
 
                 DateTime lastRun = DateTime.MinValue;
-                var lockObj = new object();
+                object lockObj = new();
 
                 return () =>
                 {
@@ -110,7 +110,7 @@ namespace Grondo.Extensions
                 ArgumentNullException.ThrowIfNull(action);
 
                 CancellationTokenSource? cts = null;
-                var lockObj = new object();
+                object lockObj = new();
                 T? lastArg = default;
 
                 return arg =>
@@ -142,7 +142,7 @@ namespace Grondo.Extensions
                 ArgumentNullException.ThrowIfNull(action);
 
                 DateTime lastRun = DateTime.MinValue;
-                var lockObj = new object();
+                object lockObj = new();
 
                 return arg =>
                 {
