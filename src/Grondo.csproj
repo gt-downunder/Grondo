@@ -37,5 +37,9 @@
     </ItemGroup>
 
     <!-- Include README and LICENSE in the NuGet package -->
+    <ItemGroup>
+        <None Include="..\README.md" Pack="true" PackagePath="\" />
+        <None Include="..\LICENSE.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
 
 </Project>
