@@ -8,6 +8,20 @@ nav_order: 5
 
 ---
 
+## Which type should I use?
+
+| You want to express...                                                 | Use                      |
+|------------------------------------------------------------------------|--------------------------|
+| A value that may be present or absent                                  | `Maybe<T>`               |
+| An operation that succeeds with a value or fails with a string message | `Result<T>`              |
+| An operation that succeeds with a value or fails with a typed error    | `Result<T, TError>`      |
+| An operation with no return value that can succeed or fail             | `Result`                 |
+| Accumulated validation errors (collect all, don't short-circuit)       | `Validation<T>`          |
+| A value that is intrinsically one of two shapes (A or B)               | `Either<TLeft, TRight>`  |
+| A structured error value for APIs                                      | `Error`                  |
+
+---
+
 ## Result\<T\>
 
 A `readonly struct` for railway-oriented programming. An operation either succeeds with a value
@@ -621,3 +635,69 @@ var result =
 - **Composable** - Easy to add more steps
 - **Type-safe** - Full IntelliSense support
 - **Short-circuiting** - Stops at first failure (Result) or None (Maybe)
+
+---
+
+## Result\<T, TError\>
+
+A typed-error variant of `Result<T>`. Use this when the error is more than just a string — for
+example when the caller needs to branch on specific error categories (`NotFound`, `Validation`,
+`Unauthorized`) or needs structured error data.
+
+```csharp
+Result<User, Error> LookupUser(int id)
+{
+    User? user = _db.Find(id);
+    return user is null
+        ? Error.NotFound($"User {id} was not found.")
+        : user;
+}
+
+Result<UserDto, Error> result = LookupUser(42)
+    .Map(u => new UserDto(u))
+    .Ensure(u => u.IsActive, Error.Forbidden("User is disabled."));
+
+string response = result.Match(
+    success: dto => JsonSerializer.Serialize(dto),
+    failure: err => err.Message);
+```
+
+The API mirrors `Result<T>`: `Map`, `MapError`, `Bind`, `Match`, `Tap`, `TapError`, `Ensure`,
+`Recover`, plus LINQ query syntax and `async` overloads.
+
+## Error
+
+A structured error record with common factory methods.
+
+```csharp
+Error.NotFound("User 42 not found.")
+Error.Validation("Name is required.")
+Error.Unauthorized("Token expired.")
+Error.Forbidden("Insufficient privileges.")
+Error.Conflict("Email already registered.")
+Error.Unexpected("Database connection lost.")
+```
+
+Each error carries a `Code` (string) and a `Message`.
+
+---
+
+## Combinators
+
+Helpers for working with collections of functional types — commonly `Sequence` and `Traverse`.
+
+```csharp
+// Flip a collection of Results into a Result of a collection.
+// Short-circuits at the first failure.
+IEnumerable<Result<int>> parsed = inputs.Select(Result<int>.TryExecute);
+Result<IReadOnlyList<int>> all = Combinators.Sequence(parsed);
+
+// Apply a Result-returning function and combine the results in one step.
+Result<IReadOnlyList<int>> parsed = Combinators.Traverse(inputs, Parse);
+
+// Works for Maybe<T> and Validation<T> too:
+Maybe<IReadOnlyList<int>> maybeAll = Combinators.Sequence(maybes);
+Validation<IReadOnlyList<int>> valid = Combinators.Sequence(validations);
+```
+
+For `Validation<T>`, `Sequence` accumulates *all* errors rather than short-circuiting.

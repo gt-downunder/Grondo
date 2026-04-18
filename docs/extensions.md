@@ -119,14 +119,39 @@ DateTime parsed2 = "25/12/2025 14:30:00".FromFormattedDateTime();
 bool     ok2     = "nope".TryFromFormattedDateTime(out _);  // false
 ```
 
+Week/year/age/relative helpers:
+
+```csharp
+DateTime now = DateTime.UtcNow;
+
+DateTime mon  = now.StartOfWeek();              // Monday 00:00 of current week
+DateTime sun  = now.EndOfWeek();                // last tick of Sunday
+DateTime jan1 = now.StartOfYear();              // first tick of Jan 1
+DateTime dec31 = now.EndOfYear();               // last tick of Dec 31
+
+int age      = birthDate.Age();                 // whole years to now (UTC)
+int ageAt    = birthDate.AgeAt(asOf);           // whole years to a reference date
+
+bool today   = someDate.IsToday();
+bool past    = someDate.IsInPast();
+bool future  = someDate.IsInFuture();
+int daysLeft = expiresAt.DaysUntil();           // negative if past
+bool leap    = someDate.IsLeapYear();
+
+long epochS  = now.ToUnixTimeSeconds();
+long epochMs = now.ToUnixTimeMilliseconds();
+```
+
 ---
 
 ## DateTimeOffsetEx
 
 Mirrors every method in [DateTimeEx](#datetimeex) for `DateTimeOffset` and `DateTimeOffset?`:
 `ToFormattedDate`, `ToFormattedDateTime`, `AddWeeks`, `TruncateMilliseconds`, `IsWeekday`, `IsWeekend`,
-`StartOfDay`, `EndOfDay`, `StartOfMonth`, `EndOfMonth`, `IsBetween`, `ToRelativeTime`, and the
-nullable overloads. Usage is identical — just substitute `DateTimeOffset` for `DateTime`.
+`StartOfDay`, `EndOfDay`, `StartOfMonth`, `EndOfMonth`, `IsBetween`, `ToRelativeTime`, `StartOfWeek`,
+`EndOfWeek`, `StartOfYear`, `EndOfYear`, `Age`, `AgeAt`, `IsToday`, `IsInPast`, `IsInFuture`,
+`DaysUntil`, `IsLeapYear`, and the nullable overloads. Usage is identical — just substitute
+`DateTimeOffset` for `DateTime`.
 
 ---
 
@@ -152,6 +177,13 @@ var merged = dict.Merge(new Dictionary<string, int> { ["b"] = 99, ["c"] = 3 });
 
 // Get or lazily add
 int val = dict.GetOrAdd("z", () => 42);             // adds "z"=42, returns 42
+
+// Add or update in a single call
+int result = dict.AddOrUpdate("a", addValue: 1, (_, existing) => existing + 10);
+// If "a" existed with value 1, result is 11
+
+// Remove matching entries (returns count removed)
+int removed = dict.RemoveWhere(kv => kv.Value > 50);
 
 // Get with fallback (no mutation)
 int safe = dict.GetValueOrDefault("missing", -1);    // -1
@@ -239,6 +271,17 @@ var tagged = numbers.TagFirstLast((item, isFirst, isLast) =>
 // Remove nulls
 string?[] mixed = ["hello", null, "world"];
 IEnumerable<string> clean = mixed.WhereNotNull(); // ["hello","world"]
+
+// Duplicate and predicate checks
+numbers.HasDuplicates();                        // false
+numbers.None(n => n > 100);                     // true
+
+// Infinite cycling (caller must limit)
+int[] taken = numbers.Cycle().Take(8).ToArray();    // [1,2,3,4,5,1,2,3]
+
+// Flatten nested sequences
+IEnumerable<int[]> nested = [[1, 2], [3], [4, 5]];
+IEnumerable<int> flat = nested.Flatten();       // [1,2,3,4,5]
 ```
 
 ---
@@ -299,6 +342,8 @@ public void Process(string name, int age, Guid id, IList<string> tags)
     age.ThrowIfNegativeOrZero();
     age.ThrowIfZero();
     age.ThrowIfOutOfRange(1, 120);               // must be in [1, 120]
+    age.ThrowIfLessThan(18);                     // ArgumentOutOfRangeException if < 18
+    age.ThrowIfGreaterThan(65);                  // ArgumentOutOfRangeException if > 65
 
     id.ThrowIfDefault();                         // ArgumentException (Guid.Empty)
     tags.ThrowIfEmpty();                         // ArgumentException (empty collection)
@@ -418,6 +463,14 @@ string ord = 3.ToOrdinal();  // "3rd"
 TimeSpan ts = 5.Seconds();       // TimeSpan.FromSeconds(5)
 TimeSpan d  = 2.5.Hours();       // TimeSpan.FromHours(2.5)
 // Also: .Days(), .Minutes(), .Milliseconds()
+
+// Clamp, range test (INumber<T>)
+15.ClampTo(min: 5, max: 10);  // 10
+7.IsBetween(5, 10);           // true (inclusive)
+
+// Rounding and percentages (double / decimal)
+3.14159.RoundTo(2);           // 3.14
+25.0.PercentageOf(200.0);     // 12.5
 ```
 
 ---
@@ -588,6 +641,27 @@ byte[]? raw = GetBytes();
 string str = raw.FromByteArray(); // UTF-8 decode, or "" if null
 ```
 
+Transformations and formatting:
+
+```csharp
+"my_property_name".ToPascalCase();          // "MyPropertyName" (also handles camelCase, kebab-case)
+"hello world".ToTitleCase();                // "Hello World"
+"<p>hi <b>there</b></p>".StripHtml();       // "hi there"
+"café naïve".RemoveDiacritics();            // "cafe naive"
+"hello world".WordCount();                  // 2
+"ab".Repeat(3);                             // "ababab"
+
+"world".EnsureStartsWith("hello-");         // "hello-world" (or as-is if already present)
+"file".EnsureEndsWith(".txt");              // "file.txt"
+
+// Multiple replacements in one pass
+"foo and baz".ReplaceMultiple(new Dictionary<string, string>
+{
+    ["foo"] = "bar",
+    ["baz"] = "qux",
+}); // "bar and qux"
+```
+
 ---
 
 ## TaskEx
@@ -629,6 +703,10 @@ string safe = await RiskyAsync()
 
 // Fire and forget (swallows exceptions, optional handler)
 SendAnalyticsAsync().FireAndForget(ex => logger.LogWarning(ex, "Analytics failed"));
+
+// Attach a cancellation token to a task that does not natively accept one.
+// Throws OperationCanceledException if the token fires before the task completes.
+int value = await someTask.WithCancellationAsync(cancellationToken);
 ```
 
 ---
@@ -645,6 +723,13 @@ string human = elapsed.ToHumanReadable(); // "2 hours 30 minutes"
 // Control decimal precision
 TimeSpan precise = TimeSpan.FromSeconds(61.456);
 string p = precise.ToHumanReadable(decimalPlaces: 2); // "1 minute 1.46 seconds"
+
+// Clock formatting (HH:MM:SS) — hours are not capped at 24
+new TimeSpan(1, 3, 10, 0).ToClockString();  // "27:10:00"
+TimeSpan.FromSeconds(-65).ToClockString();  // "-00:01:05"
+
+TimeSpan.FromSeconds(1).IsPositive();       // true
+TimeSpan.FromSeconds(-1).IsNegative();      // true
 ```
 
 ---
@@ -658,6 +743,18 @@ var uri = new Uri("https://user:pass@example.com:8080/api/v1?q=test#section");
 
 string dump = uri.DumpProperties();
 // Multi-line string with Scheme, Host, Port, Path, Query, Fragment, etc.
+
+// Path and query manipulation
+Uri api = new Uri("https://example.com/api/").AppendPath("users");
+// https://example.com/api/users
+
+IReadOnlyDictionary<string, string> query = uri.GetQueryParameters();
+// { "q": "test" }
+
+Uri withQuery = new Uri("https://example.com/api")
+    .WithQueryParameter("page", "2")
+    .WithQueryParameter("size", "50");
+// https://example.com/api?page=2&size=50
 ```
 
 ---
@@ -746,4 +843,31 @@ Lazy<ExpensiveResource> lazy = factory.ToLazy();
 
 // Resource only created on first access
 var resource = lazy.Value;
+```
+
+---
+
+## RegexEx
+
+Regex extension methods on `string` that avoid constructing a `Regex` manually.
+
+```csharp
+"abc123".RegexIsMatch(@"[a-z]+\d+");                          // true
+"abc123def456".RegexMatch(@"\d+");                            // "123"
+"abc123def456".RegexMatches(@"\d+");                          // ["123", "456"]
+"a1 b2 c3".RegexReplace(@"\d", m => (int.Parse(m.Value) * 10).ToString());
+                                                              // "a10 b20 c30"
+"abc123".RegexReplace(@"\d+", "X");                           // "abcX"
+```
+
+---
+
+## CancellationTokenEx
+
+```csharp
+// Convert a token to a Task that completes (cancelled) when the token fires
+Task task = cancellationToken.AsTask();
+
+// Create a linked token that also cancels after a timeout (caller disposes)
+using CancellationTokenSource linked = outerToken.WithTimeout(TimeSpan.FromSeconds(30));
 ```

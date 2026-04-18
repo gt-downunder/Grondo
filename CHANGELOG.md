@@ -7,6 +7,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+#### Types
+- `Result<T, TError>` — typed-error Result monad with `Map`, `MapError`, `Bind`, `Match`, `Tap`,
+  `TapError`, `Ensure`, `Recover`, LINQ query syntax, async overloads, and equality.
+- `Error` record with common factory helpers: `NotFound`, `Validation`, `Unauthorized`,
+  `Forbidden`, `Conflict`, `Unexpected`.
+- `Combinators` static class: `Sequence`/`Traverse` for `Result<T>`, `Maybe<T>`, `Validation<T>`,
+  and `Result<T, TError>`.
+- `Either<L, R>`: `Swap`, `BiMap`, `TapBoth`, `ToValidation`, typed `ToResult()`, `Select`,
+  `SelectMany` (LINQ query syntax).
+- `Maybe<T>`: `AsEnumerable`, `ToArray`, `ToList`.
+- `Validation<T>`: `Apply` (applicative style), `ToMaybe`, `ToEither`.
+
+#### Extensions
+- `StringEx`: `ToPascalCase`, `ToTitleCase`, `StripHtml`, `WordCount`, `RemoveDiacritics`,
+  `Repeat`, `EnsureStartsWith`, `EnsureEndsWith`, `ReplaceMultiple`.
+- `DateTimeEx` / `DateTimeOffsetEx`: `StartOfWeek`, `EndOfWeek`, `StartOfYear`, `EndOfYear`,
+  `Age`, `AgeAt`, `ToUnixTimeSeconds`, `ToUnixTimeMilliseconds`, `IsToday`, `IsInPast`,
+  `IsInFuture`, `DaysUntil`, `IsLeapYear`.
+- `TimeSpanEx`: `ToClockString`, `IsPositive`, `IsNegative`.
+- `NumericEx`: `ClampTo`, `IsBetween` (for `INumber<T>`); `RoundTo`, `PercentageOf`
+  (for `double` and `decimal`).
+- `EnumerableEx`: `HasDuplicates`, `None`, `Cycle`, `Flatten`.
+- `DictionaryEx`: `AddOrUpdate`, `RemoveWhere`.
+- `TaskEx`: `WithCancellationAsync` on both `Task` and `Task<T>`.
+- `GuardEx`: `ThrowIfLessThan`, `ThrowIfGreaterThan` for `INumber<T>`.
+- `UriEx`: `AppendPath`, `GetQueryParameters`, `WithQueryParameter`.
+- New `RegexEx` class: `RegexIsMatch`, `RegexMatch`, `RegexMatches`, `RegexReplace`.
+- New `CancellationTokenEx` class: `AsTask`, `WithTimeout`.
+
+#### Exceptions & API
+- `PaymentRequiredException` (HTTP 402).
+- `ExceptionBase.ToProblemDetails()` — converts any `ExceptionBase` (including
+  `ValidationException`) to an RFC 7807 `ProblemDetails` response.
+- `ExceptionHandlingMiddleware` with `UseGrondoExceptionHandling()` extension for automatic
+  conversion of exceptions to `application/problem+json` responses.
+
+#### Utilities
+- `JsonDefaults` is now `public` and adds presets: `CamelCase`, `SnakeCase`, `NoNulls`, `Web`.
+- `StringFactory`: `CreateAlphabeticString`, `CreateNumericString`, `CreateHexString`.
+
+#### Tooling & Infrastructure
+- `.editorconfig` with repo-wide formatting rules.
+- Community health files: `CODE_OF_CONDUCT.md`, `SECURITY.md`, issue and PR templates.
+- PR CI: build-and-publish workflow now runs on `pull_request` (publish job remains gated).
+- Weekly mutation-testing workflow (Stryker.NET) and PR-triggered benchmark workflow.
+- Property-based tests for monad laws (`Maybe`, `Result`, `Either`) via FsCheck 3.
+
+### Changed
+- Fixed `DebuggerDisplay` expression syntax in `Maybe<T>`, `Result<T>`, and `Result`.
+- Pages workflow bumped to `actions/configure-pages@v6`, `actions/upload-pages-artifact@v5`,
+  `actions/deploy-pages@v5`.
+- Documentation "What's Inside" links now correctly resolve under `/Grondo`.
+
 ---
 
 ## [1.2.0] - 2026-03-24
@@ -247,7 +302,7 @@ var memoized = expensiveFunction.Memoize();
 
 ---
 
-[Unreleased]: https://github.com/gt-downunder/Grondo/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/gt-downunder/Grondo/compare/v1.2.1...HEAD
 [1.2.0]: https://github.com/gt-downunder/Grondo/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/gt-downunder/Grondo/compare/v1.0.42...v1.1.0
 [1.0.0]: https://github.com/gt-downunder/Grondo/releases/tag/v1.0.0

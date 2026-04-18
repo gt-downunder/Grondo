@@ -13,6 +13,7 @@ Each exception carries an HTTP status code and a short message header.
 |---|---|---|
 | `BadRequestException` | 400 Bad Request | "Bad Request" |
 | `NotAuthorizedException` | 401 Unauthorized | "Not authorized" |
+| `PaymentRequiredException` | 402 Payment Required | "Payment Required" |
 | `ForbiddenException` | 403 Forbidden | "Forbidden" |
 | `EntityNotFoundException` | 404 Not Found | "Not found" |
 | `ConflictException` | 409 Conflict | "Conflict" |
@@ -215,3 +216,45 @@ if (product.Stock < order.Quantity)
         $"Insufficient stock. Available: {product.Stock}, Requested: {order.Quantity}");
 }
 ```
+
+
+---
+
+## ProblemDetails and automatic middleware
+
+Every `ExceptionBase` can be converted to an RFC 7807 `ProblemDetails` response, and the provided
+ASP.NET Core middleware does this automatically.
+
+### Manual conversion
+
+```csharp
+catch (EntityNotFoundException ex)
+{
+    ProblemDetails details = ex.ToProblemDetails(instance: HttpContext.Request.Path);
+    return Results.Json(details, statusCode: details.Status);
+}
+```
+
+`ValidationException` is converted to a `ValidationProblemDetails` so field-level errors are
+preserved in the `errors` member.
+
+### Middleware
+
+Register the middleware once at application start-up:
+
+```csharp
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+app.UseGrondoExceptionHandling();
+// Optionally, customize:
+app.UseGrondoExceptionHandling(new ExceptionHandlingOptions
+{
+    HandleUnexpectedExceptions = true,         // catch non-ExceptionBase too
+    IncludeUnexpectedExceptionDetails = false, // redact messages from unknown exceptions
+});
+```
+
+Any `ExceptionBase` thrown during request handling is converted to `application/problem+json`
+with the correct status code, title, and detail. Unhandled exceptions (if enabled) surface as
+a generic 500 response.

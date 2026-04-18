@@ -19,7 +19,7 @@ namespace Grondo.Tests
         public void Maybe_LeftIdentity() =>
             Prop.ForAll<int>(a =>
             {
-                Func<int, Maybe<int>> f = x => Maybe<int>.Some(x + 1);
+                static Maybe<int> f(int x) => Maybe<int>.Some(x + 1);
                 return Maybe<int>.Some(a).Bind(f).Equals(f(a));
             }).QuickCheckThrowOnFailure();
 
@@ -39,8 +39,8 @@ namespace Grondo.Tests
         public void Maybe_Associativity() =>
             Prop.ForAll<int>(a =>
             {
-                Func<int, Maybe<int>> f = x => Maybe<int>.Some(x * 2);
-                Func<int, Maybe<int>> g = x => Maybe<int>.Some(x + 3);
+                Maybe<int> f(int x) => Maybe<int>.Some(x * 2);
+                Maybe<int> g(int x) => Maybe<int>.Some(x + 3);
                 var m = Maybe<int>.Some(a);
                 return m.Bind(f).Bind(g).Equals(m.Bind(x => f(x).Bind(g)));
             }).QuickCheckThrowOnFailure();
@@ -51,7 +51,7 @@ namespace Grondo.Tests
         public void Result_LeftIdentity() =>
             Prop.ForAll<int>(a =>
             {
-                Func<int, Result<int>> f = x => Result<int>.Success(x + 1);
+                static Result<int> f(int x) => Result<int>.Success(x + 1);
                 return Result<int>.Success(a).Bind(f).Equals(f(a));
             }).QuickCheckThrowOnFailure();
 
@@ -76,8 +76,8 @@ namespace Grondo.Tests
         public void Result_Associativity() =>
             Prop.ForAll<int>(a =>
             {
-                Func<int, Result<int>> f = x => Result<int>.Success(x * 2);
-                Func<int, Result<int>> g = x => Result<int>.Success(x + 3);
+                Result<int> f(int x) => Result<int>.Success(x * 2);
+                Result<int> g(int x) => Result<int>.Success(x + 3);
                 var m = Result<int>.Success(a);
                 return m.Bind(f).Bind(g).Equals(m.Bind(x => f(x).Bind(g)));
             }).QuickCheckThrowOnFailure();
@@ -88,7 +88,7 @@ namespace Grondo.Tests
         public void Either_LeftIdentity() =>
             Prop.ForAll<int>(a =>
             {
-                Func<int, Either<string, int>> f = x => Either<string, int>.FromRight(x + 1);
+                static Either<string, int> f(int x) => Either<string, int>.FromRight(x + 1);
                 return Either<string, int>.FromRight(a).Bind(f).Equals(f(a));
             }).QuickCheckThrowOnFailure();
 
@@ -104,8 +104,8 @@ namespace Grondo.Tests
         public void Either_Associativity() =>
             Prop.ForAll<int>(a =>
             {
-                Func<int, Either<string, int>> f = x => Either<string, int>.FromRight(x * 2);
-                Func<int, Either<string, int>> g = x => Either<string, int>.FromRight(x + 3);
+                Either<string, int> f(int x) => Either<string, int>.FromRight(x * 2);
+                Either<string, int> g(int x) => Either<string, int>.FromRight(x + 3);
                 var m = Either<string, int>.FromRight(a);
                 return m.Bind(f).Bind(g).Equals(m.Bind(x => f(x).Bind(g)));
             }).QuickCheckThrowOnFailure();
@@ -116,7 +116,7 @@ namespace Grondo.Tests
             {
                 string safe = leftValue ?? "left";
                 var m = Either<string, int>.FromLeft(safe);
-                Func<int, Either<string, int>> f = x => Either<string, int>.FromRight(x + 1);
+                static Either<string, int> f(int x) => Either<string, int>.FromRight(x + 1);
                 return m.Bind(f).Equals(m);
             }).QuickCheckThrowOnFailure();
 
@@ -134,8 +134,8 @@ namespace Grondo.Tests
         public void Maybe_FunctorComposition() =>
             Prop.ForAll<int>(a =>
             {
-                Func<int, int> f = x => x * 2;
-                Func<int, int> g = x => x + 1;
+                int f(int x) => x * 2;
+                int g(int x) => x + 1;
                 return Maybe<int>.Some(a).Map(f).Map(g).Equals(Maybe<int>.Some(a).Map(x => g(f(x))));
             }).QuickCheckThrowOnFailure();
 
