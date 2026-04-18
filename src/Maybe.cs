@@ -5,7 +5,7 @@
     /// Use <see cref="Maybe{T}.Some(T)"/> to wrap a value or <see cref="Maybe{T}.None"/> for absence.
     /// </summary>
     /// <typeparam name="T">The type of the contained value.</typeparam>
-    [System.Diagnostics.DebuggerDisplay("{HasValue ? \"Some(\" + _value + \")\" : \"None\"}}")]
+    [System.Diagnostics.DebuggerDisplay("{HasValue ? \"Some(\" + _value + \")\" : \"None\"}")]
     public readonly struct Maybe<T> : IEquatable<Maybe<T>>
     {
         private readonly T? _value;
@@ -347,6 +347,22 @@
         /// <param name="value">The value to convert.</param>
         public static implicit operator Maybe<T>(T? value) =>
             value is null ? None : new Maybe<T>(value);
+
+        /// <summary>
+        /// Returns the contained value as a single-element sequence, or an empty sequence if None.
+        /// Useful for integrating with LINQ pipelines over collections.
+        /// </summary>
+        /// <returns>An enumerable with one element if Some; otherwise an empty enumerable.</returns>
+        public IEnumerable<T> AsEnumerable()
+        {
+            if (HasValue) yield return _value!;
+        }
+
+        /// <summary>Returns the contained value as a single-element array, or an empty array if None.</summary>
+        public T[] ToArray() => HasValue ? [_value!] : [];
+
+        /// <summary>Returns the contained value as a single-element list, or an empty list if None.</summary>
+        public List<T> ToList() => HasValue ? [_value!] : [];
     }
 }
 

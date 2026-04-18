@@ -4,7 +4,7 @@
     /// Represents the outcome of an operation that can either succeed with a value or fail with an error message.
     /// </summary>
     /// <typeparam name="T">The type of the success value.</typeparam>
-    [System.Diagnostics.DebuggerDisplay("{IsSuccess ? \"Success(\" + _value + \")\" : \"Failure(\" + _error + \")\"}}")]
+    [System.Diagnostics.DebuggerDisplay("{IsSuccess ? \"Success(\" + _value + \")\" : \"Failure(\" + _error + \")\"}")]
     public readonly struct Result<T> : IEquatable<Result<T>>
     {
         private readonly T? _value;
@@ -701,7 +701,7 @@
     /// <summary>
     /// Represents the outcome of a void operation that can either succeed or fail with an error message.
     /// </summary>
-    [System.Diagnostics.DebuggerDisplay("{IsSuccess ? \"Success\" : \"Failure(\" + _error + \")\"}}")]
+    [System.Diagnostics.DebuggerDisplay("{IsSuccess ? \"Success\" : \"Failure(\" + _error + \")\"}")]
     public readonly struct Result : IEquatable<Result>
     {
         private readonly string? _error;

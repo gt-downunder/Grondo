@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using Grondo.Extensions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Grondo.Tests.Extensions
 {
@@ -55,7 +54,7 @@ namespace Grondo.Tests.Extensions
 
             for (int i = 0; i < 10; i++)
             {
-                var entry = hugeDictionary.ElementAt(RandomFactory.GetInteger(0, Size));
+                KeyValuePair<string, object> entry = hugeDictionary.ElementAt(RandomFactory.GetInteger(0, Size));
 
                 hugeDictionary.TryGetValue(entry.Key, out object? actual).Should().BeTrue();
                 actual.Should().Be(entry.Value);

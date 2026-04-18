@@ -1,7 +1,6 @@
 ﻿using System.Security.Claims;
 using FluentAssertions;
 using Grondo.Extensions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Grondo.Tests.Extensions
 {

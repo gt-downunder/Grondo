@@ -125,7 +125,7 @@ namespace Grondo
             if (IsInvalid)
                 return Validation<TResult>.Invalid(_errors!);
 
-            var result = binder(_value!);
+            Validation<TResult> result = binder(_value!);
             return result;
         }
 
@@ -154,6 +154,42 @@ namespace Grondo
             return IsValid
                 ? Result<T>.Success(_value!)
                 : Result<T>.Failure(string.Join("; ", _errors!));
+        }
+
+        /// <summary>
+        /// Converts this <see cref="Validation{T}"/> to a <see cref="Maybe{T}"/>.
+        /// Valid becomes Some; Invalid becomes None (errors are discarded).
+        /// </summary>
+        /// <returns>A Maybe containing the value, or None.</returns>
+        public Maybe<T> ToMaybe() =>
+            IsValid ? Maybe<T>.Some(_value!) : Maybe<T>.None;
+
+        /// <summary>
+        /// Converts this <see cref="Validation{T}"/> to an <see cref="Either{TLeft, TRight}"/>.
+        /// Valid becomes Right; Invalid becomes Left preserving all errors as a list.
+        /// </summary>
+        /// <returns>An Either with Right(value) if valid, or Left(errors) if invalid.</returns>
+        public Either<IReadOnlyList<string>, T> ToEither() =>
+            IsValid
+                ? Either<IReadOnlyList<string>, T>.FromRight(_value!)
+                : Either<IReadOnlyList<string>, T>.FromLeft(_errors!);
+
+        /// <summary>
+        /// Applicative apply: applies a <see cref="Validation{TFunc}"/> of a function to this
+        /// <see cref="Validation{T}"/>. Unlike Bind, failures on both sides are accumulated.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="validatedFunc">A validation containing the function to apply.</param>
+        /// <returns>A validation with the applied result, or accumulated errors from both sides.</returns>
+        public Validation<TResult> Apply<TResult>(Validation<Func<T, TResult>> validatedFunc)
+        {
+            if (IsValid && validatedFunc.IsValid)
+                return Validation<TResult>.Valid(validatedFunc._value!(_value!));
+
+            var allErrors = new List<string>();
+            if (validatedFunc.IsInvalid) allErrors.AddRange(validatedFunc._errors!);
+            if (IsInvalid) allErrors.AddRange(_errors!);
+            return Validation<TResult>.Invalid(allErrors);
         }
 
         /// <summary>

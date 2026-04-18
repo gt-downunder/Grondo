@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using Grondo.Extensions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Grondo.Tests.Extensions
 {
@@ -50,7 +49,7 @@ namespace Grondo.Tests.Extensions
         public void ToNullableDateTime_ValidDate_ReturnsValue()
         {
             object value = "2024-01-15";
-            var result = value.ToNullableDateTime();
+            DateTime? result = value.ToNullableDateTime();
             result.Should().NotBeNull();
             result!.Value.Year.Should().Be(2024);
         }

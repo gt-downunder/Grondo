@@ -254,6 +254,79 @@ namespace Grondo
         }
 
         /// <summary>
+        /// Converts this <see cref="Either{TLeft, TRight}"/> to a <see cref="Result{TRight, TLeft}"/>.
+        /// Right becomes Success; Left becomes Failure preserving the typed error.
+        /// </summary>
+        /// <returns>A Result with the Right value as success, or the Left value as a typed error.</returns>
+        public Result<TRight, TLeft> ToResult() =>
+            IsRight
+                ? Result<TRight, TLeft>.Success(_right!)
+                : Result<TRight, TLeft>.Failure(_left!);
+
+        /// <summary>
+        /// Converts this <see cref="Either{TLeft, TRight}"/> to a <see cref="Validation{TRight}"/>
+        /// using the specified function to convert the Left value to an error message.
+        /// </summary>
+        /// <param name="errorMapper">The function to convert the Left value to an error string.</param>
+        /// <returns>A valid Validation with the Right value, or an invalid Validation with the mapped error.</returns>
+        public Validation<TRight> ToValidation(Func<TLeft, string> errorMapper)
+        {
+            ArgumentNullException.ThrowIfNull(errorMapper);
+            return IsRight
+                ? Validation<TRight>.Valid(_right!)
+                : Validation<TRight>.Invalid(errorMapper(_left!));
+        }
+
+        /// <summary>Swaps Left and Right. Useful for switching between failure-on-left and failure-on-right conventions.</summary>
+        /// <returns>An Either with Left and Right swapped.</returns>
+        public Either<TRight, TLeft> Swap() =>
+            IsLeft
+                ? Either<TRight, TLeft>.FromRight(_left!)
+                : Either<TRight, TLeft>.FromLeft(_right!);
+
+        /// <summary>Transforms both Left and Right values with their respective mapping functions.</summary>
+        /// <typeparam name="TNewLeft">The type of the new Left value.</typeparam>
+        /// <typeparam name="TNewRight">The type of the new Right value.</typeparam>
+        /// <param name="leftMapper">The function to transform the Left value.</param>
+        /// <param name="rightMapper">The function to transform the Right value.</param>
+        /// <returns>An Either with both sides transformed.</returns>
+        public Either<TNewLeft, TNewRight> BiMap<TNewLeft, TNewRight>(
+            Func<TLeft, TNewLeft> leftMapper,
+            Func<TRight, TNewRight> rightMapper)
+        {
+            ArgumentNullException.ThrowIfNull(leftMapper);
+            ArgumentNullException.ThrowIfNull(rightMapper);
+            return IsLeft
+                ? Either<TNewLeft, TNewRight>.FromLeft(leftMapper(_left!))
+                : Either<TNewLeft, TNewRight>.FromRight(rightMapper(_right!));
+        }
+
+        /// <summary>Executes one of two side-effects depending on which side is present.</summary>
+        /// <param name="onLeft">The action to execute if this is a Left.</param>
+        /// <param name="onRight">The action to execute if this is a Right.</param>
+        /// <returns>This instance, unchanged.</returns>
+        public Either<TLeft, TRight> TapBoth(Action<TLeft> onLeft, Action<TRight> onRight)
+        {
+            ArgumentNullException.ThrowIfNull(onLeft);
+            ArgumentNullException.ThrowIfNull(onRight);
+            if (IsLeft) onLeft(_left!); else onRight(_right!);
+            return this;
+        }
+
+        /// <summary>Enables LINQ query syntax support (alias for Map over Right).</summary>
+        public Either<TLeft, TResult> Select<TResult>(Func<TRight, TResult> selector) => Map(selector);
+
+        /// <summary>Enables LINQ query syntax support for chaining operations over Right.</summary>
+        public Either<TLeft, TResult> SelectMany<TIntermediate, TResult>(
+            Func<TRight, Either<TLeft, TIntermediate>> selector,
+            Func<TRight, TIntermediate, TResult> projector)
+        {
+            ArgumentNullException.ThrowIfNull(selector);
+            ArgumentNullException.ThrowIfNull(projector);
+            return Bind(r => selector(r).Map(i => projector(r, i)));
+        }
+
+        /// <summary>
         /// Returns a string representation of this instance.
         /// </summary>
         /// <returns>A string in the form "Left(value)" or "Right(value)".</returns>

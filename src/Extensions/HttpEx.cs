@@ -108,7 +108,7 @@ namespace Grondo.Extensions
                 if (!request.HasFormContentType)
                     return new Dictionary<string, string>();
 
-                var form = await request.ReadFormAsync(cancellationToken).ConfigureAwait(false);
+                IFormCollection form = await request.ReadFormAsync(cancellationToken).ConfigureAwait(false);
                 return form.ToDictionary(
                     kvp => kvp.Key,
                     kvp => kvp.Value.ToString(),

@@ -2,7 +2,6 @@
 using Grondo.Extensions;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Grondo.Tests.Extensions
 {

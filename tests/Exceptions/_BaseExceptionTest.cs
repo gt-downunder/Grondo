@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace Grondo.Tests.Exceptions
+﻿namespace Grondo.Tests.Exceptions
 {
     [TestClass]
     [TestCategory("Exceptions")]

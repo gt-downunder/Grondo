@@ -23,7 +23,7 @@
                 ArgumentNullException.ThrowIfNull(selector);
 
                 var results = new List<TResult>();
-                foreach (var item in source)
+                foreach (T? item in source)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     results.Add(await selector(item).ConfigureAwait(false));
@@ -49,7 +49,7 @@
                 ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxConcurrency);
 
                 using var semaphore = new SemaphoreSlim(maxConcurrency);
-                var tasks = source.Select(async item =>
+                IEnumerable<Task<TResult>> tasks = source.Select(async item =>
                 {
                     await semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
                     try
@@ -79,7 +79,7 @@
                 ArgumentNullException.ThrowIfNull(predicate);
 
                 var results = new List<T>();
-                foreach (var item in source)
+                foreach (T? item in source)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     if (await predicate(item).ConfigureAwait(false))
@@ -102,7 +102,7 @@
                 ArgumentNullException.ThrowIfNull(source);
                 ArgumentNullException.ThrowIfNull(action);
 
-                foreach (var item in source)
+                foreach (T? item in source)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     await action(item).ConfigureAwait(false);
@@ -125,8 +125,8 @@
                 ArgumentNullException.ThrowIfNull(source);
                 ArgumentNullException.ThrowIfNull(accumulator);
 
-                var result = seed;
-                foreach (var item in source)
+                TAccumulate? result = seed;
+                foreach (T? item in source)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     result = await accumulator(result, item).ConfigureAwait(false);
@@ -147,7 +147,7 @@
                 ArgumentNullException.ThrowIfNull(source);
                 ArgumentNullException.ThrowIfNull(predicate);
 
-                foreach (var item in source)
+                foreach (T? item in source)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     if (await predicate(item).ConfigureAwait(false))
@@ -169,7 +169,7 @@
                 ArgumentNullException.ThrowIfNull(source);
                 ArgumentNullException.ThrowIfNull(predicate);
 
-                foreach (var item in source)
+                foreach (T? item in source)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     if (!await predicate(item).ConfigureAwait(false))

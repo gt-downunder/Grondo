@@ -66,14 +66,14 @@ namespace Grondo.Extensions
             {
                 ArgumentNullException.ThrowIfNull(action);
 
-                var lastRun = DateTime.MinValue;
+                DateTime lastRun = DateTime.MinValue;
                 var lockObj = new object();
 
                 return () =>
                 {
                     lock (lockObj)
                     {
-                        var now = DateTime.UtcNow;
+                        DateTime now = DateTime.UtcNow;
                         if (now - lastRun >= interval)
                         {
                             action();
@@ -141,14 +141,14 @@ namespace Grondo.Extensions
             {
                 ArgumentNullException.ThrowIfNull(action);
 
-                var lastRun = DateTime.MinValue;
+                DateTime lastRun = DateTime.MinValue;
                 var lockObj = new object();
 
                 return arg =>
                 {
                     lock (lockObj)
                     {
-                        var now = DateTime.UtcNow;
+                        DateTime now = DateTime.UtcNow;
                         if (now - lastRun >= interval)
                         {
                             action(arg);

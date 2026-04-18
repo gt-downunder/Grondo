@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Grondo.Tests
 {
@@ -224,6 +223,44 @@ namespace Grondo.Tests
             var validation = Maybe<int>.None.ToValidation("value is required");
             validation.IsInvalid.Should().BeTrue();
             validation.Errors.Should().ContainSingle().Which.Should().Be("value is required");
+        }
+
+        // --- AsEnumerable / ToArray / ToList ---
+
+        [TestMethod]
+        public void AsEnumerable_Some_YieldsSingleElement()
+        {
+            Maybe<int>.Some(7).AsEnumerable().Should().BeEquivalentTo([7]);
+        }
+
+        [TestMethod]
+        public void AsEnumerable_None_YieldsEmpty()
+        {
+            Maybe<int>.None.AsEnumerable().Should().BeEmpty();
+        }
+
+        [TestMethod]
+        public void ToArray_Some_ReturnsSingleElementArray()
+        {
+            Maybe<string>.Some("x").ToArray().Should().BeEquivalentTo(["x"]);
+        }
+
+        [TestMethod]
+        public void ToArray_None_ReturnsEmptyArray()
+        {
+            Maybe<string>.None.ToArray().Should().BeEmpty();
+        }
+
+        [TestMethod]
+        public void ToList_Some_ReturnsSingleElementList()
+        {
+            Maybe<int>.Some(5).ToList().Should().BeEquivalentTo([5]);
+        }
+
+        [TestMethod]
+        public void ToList_None_ReturnsEmptyList()
+        {
+            Maybe<int>.None.ToList().Should().BeEmpty();
         }
     }
 }

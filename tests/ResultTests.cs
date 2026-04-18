@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Grondo.Tests
 {
@@ -537,7 +536,7 @@ namespace Grondo.Tests
         [TestMethod]
         public void Combine_Collection_MultipleFailures_ReturnsFirstError()
         {
-            var combined = ResultEx.Combine(new[]
+            Result<IReadOnlyList<int>> combined = ResultEx.Combine(new[]
             {
                 Result<int>.Success(1),
                 Result<int>.Failure("second failed"),
@@ -688,7 +687,7 @@ namespace Grondo.Tests
         [TestMethod]
         public void Combine_TwoSuccesses_ReturnsTuple()
         {
-            var combined = ResultEx.Combine(Result<int>.Success(1), Result<string>.Success("two"));
+            Result<(int, string)> combined = ResultEx.Combine(Result<int>.Success(1), Result<string>.Success("two"));
 
             combined.IsSuccess.Should().BeTrue();
             combined.Value.Should().Be((1, "two"));

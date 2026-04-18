@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using Grondo.Extensions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Grondo.Tests.Extensions
 {
@@ -31,7 +30,7 @@ namespace Grondo.Tests.Extensions
         public void Deserialize_ValidXml_ReturnsEntity()
         {
             var entity = new TestEntity { Name = "Hello", Value = 7 };
-            var result = entity.Serialize().Deserialize<TestEntity>();
+            TestEntity? result = entity.Serialize().Deserialize<TestEntity>();
 
             result.Should().NotBeNull();
             result!.Name.Should().Be("Hello");
@@ -48,7 +47,7 @@ namespace Grondo.Tests.Extensions
         public void RoundTrip_ComplexEntity_PreservesData()
         {
             var original = new TestEntity { Name = "Round Trip", Value = 999 };
-            var deserialized = original.Serialize().Deserialize<TestEntity>();
+            TestEntity? deserialized = original.Serialize().Deserialize<TestEntity>();
 
             deserialized.Should().NotBeNull();
             deserialized!.Name.Should().Be(original.Name);

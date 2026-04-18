@@ -137,7 +137,7 @@ namespace Grondo.Extensions
                 ArgumentNullException.ThrowIfNull(configuration);
                 ArgumentException.ThrowIfNullOrWhiteSpace(sectionName);
 
-                var section = configuration.GetSection(sectionName);
+                IConfigurationSection section = configuration.GetSection(sectionName);
                 var instance = new T();
                 section.Bind(instance);
                 return instance;
