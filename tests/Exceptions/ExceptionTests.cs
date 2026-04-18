@@ -184,5 +184,28 @@ namespace Grondo.Tests.Exceptions
             var ex = new BadRequestException("outer", innerException: inner);
             ex.InnerException.Should().BeSameAs(inner);
         }
+
+        [TestMethod]
+        public void PaymentRequiredException_Throws_402Error()
+        {
+            Action act = () => ThrowException(new PaymentRequiredException(string.Empty));
+            act.Should().Throw<PaymentRequiredException>()
+                .Which.StatusCode.Should().Be(HttpStatusCode.PaymentRequired);
+        }
+
+        [TestMethod]
+        public void PaymentRequiredException_HasCorrectDefaultHeader()
+        {
+            var ex = new PaymentRequiredException("test");
+            ex.MessageHeader.Should().Be("Payment Required");
+            ((int)ex.StatusCode).Should().Be(402);
+        }
+
+        [TestMethod]
+        public void PaymentRequiredException_CustomHeader_IsPreserved()
+        {
+            var ex = new PaymentRequiredException("test", "Subscription Required");
+            ex.MessageHeader.Should().Be("Subscription Required");
+        }
     }
 }

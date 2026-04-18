@@ -11,7 +11,7 @@ namespace Grondo.Tests.Extensions
         public async Task ToByteArrayAsync_ReturnsBytes()
         {
             byte[] data = "Hello, World!"u8.ToArray();
-            using var stream = new MemoryStream(data);
+            await using var stream = new MemoryStream(data);
 
             byte[] result = await stream.ToByteArrayAsync(TestContext.CancellationToken);
             result.Should().BeEquivalentTo(data);
@@ -29,7 +29,7 @@ namespace Grondo.Tests.Extensions
         public async Task ToStringAsync_ReturnsStringContent()
         {
             string text = "Hello, Stream!";
-            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(text));
+            await using var stream = new MemoryStream(Encoding.UTF8.GetBytes(text));
 
             string result = await stream.ToStringAsync(cancellationToken: TestContext.CancellationToken);
             result.Should().Be(text);
@@ -39,7 +39,7 @@ namespace Grondo.Tests.Extensions
         public async Task ToStringAsync_CustomEncoding_ReturnsCorrectString()
         {
             string text = "Hello ASCII";
-            using var stream = new MemoryStream(Encoding.ASCII.GetBytes(text));
+            await using var stream = new MemoryStream(Encoding.ASCII.GetBytes(text));
 
             string result = await stream.ToStringAsync(Encoding.ASCII, TestContext.CancellationToken);
             result.Should().Be(text);
@@ -49,7 +49,7 @@ namespace Grondo.Tests.Extensions
         public async Task ToMemoryStreamAsync_ReturnsCopyAtPositionZero()
         {
             byte[] data = "copy me"u8.ToArray();
-            using var source = new MemoryStream(data);
+            await using var source = new MemoryStream(data);
 
             MemoryStream copy = await source.ToMemoryStreamAsync(TestContext.CancellationToken);
 
@@ -70,7 +70,7 @@ namespace Grondo.Tests.Extensions
         public async Task ToByteArrayAsync_ResetsPosition_WhenSeekable()
         {
             byte[] data = "position test"u8.ToArray();
-            using var stream = new MemoryStream(data);
+            await using var stream = new MemoryStream(data);
             stream.Position = 5; // Move position forward
 
             byte[] result = await stream.ToByteArrayAsync(TestContext.CancellationToken);

@@ -18,21 +18,21 @@ namespace Grondo.Benchmarks
         [Benchmark]
         public async Task<byte[]> ToByteArrayAsync()
         {
-            using var stream = new MemoryStream(_data);
+            await using var stream = new MemoryStream(_data);
             return await stream.ToByteArrayAsync();
         }
 
         [Benchmark]
         public async Task<string> ToStringAsync()
         {
-            using var stream = new MemoryStream(_data);
+            await using var stream = new MemoryStream(_data);
             return await stream.ToStringAsync();
         }
 
         [Benchmark]
         public async Task<MemoryStream> ToMemoryStreamAsync()
         {
-            using var stream = new MemoryStream(_data);
+            await using var stream = new MemoryStream(_data);
             MemoryStream result = await stream.ToMemoryStreamAsync();
             await result.DisposeAsync();
             return result;

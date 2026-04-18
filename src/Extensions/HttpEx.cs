@@ -74,7 +74,7 @@ namespace Grondo.Extensions
                 request.EnableBuffering();
                 request.Body.Position = 0;
 
-                using var ms = new MemoryStream();
+                await using var ms = new MemoryStream();
                 await request.Body.CopyToAsync(ms, cancellationToken).ConfigureAwait(false);
                 request.Body.Position = 0;
 
