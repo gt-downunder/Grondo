@@ -1,0 +1,68 @@
+name: Benchmarks
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'benchmarks/**'
+      - '.github/workflows/benchmarks.yml'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  DOTNET_SDK_VERSION: 10.0.x
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: true
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ env.DOTNET_SDK_VERSION }}
+
+      - name: Restore
+        run: dotnet restore Grondo.sln
+
+      - name: Build benchmarks (Release)
+        run: dotnet build benchmarks/Grondo.Benchmarks.csproj -c Release --no-restore
+
+      - name: Run benchmarks (filter = Fast suite)
+        run: >-
+          dotnet run -c Release --no-build --project benchmarks/Grondo.Benchmarks.csproj --
+          --filter "*"
+          --exporters Markdown GitHub
+          --artifacts ./BenchmarkDotNet.Artifacts
+          --join
+        continue-on-error: true
+
+      - name: Upload benchmark artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: benchmark-results
+          path: ./BenchmarkDotNet.Artifacts/
+          if-no-files-found: ignore
+
+      - name: Append summary
+        if: always()
+        run: |
+          echo "### BenchmarkDotNet Results" >> $GITHUB_STEP_SUMMARY
+          if compgen -G "./BenchmarkDotNet.Artifacts/results/*-report-github.md" > /dev/null; then
+            for f in ./BenchmarkDotNet.Artifacts/results/*-report-github.md; do
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "#### $(basename "$f" -report-github.md)" >> $GITHUB_STEP_SUMMARY
+              cat "$f" >> $GITHUB_STEP_SUMMARY
+            done
+          else
+            echo "No benchmark reports were produced." >> $GITHUB_STEP_SUMMARY
+          fi

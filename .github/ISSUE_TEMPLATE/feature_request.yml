@@ -1,0 +1,50 @@
+name: Feature request
+description: Propose a new feature or API for Grondo.
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before filing, please skim `CONTRIBUTING.md` and the existing issues/discussions
+        to see whether this has already been proposed.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: Describe the scenario that is painful or impossible today.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed API
+      description: Sketch the public API. Method signatures, usage example, return types.
+      render: csharp
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What workarounds exist today? Why are they insufficient?
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Proposed surface area
+      options:
+        - Extension method
+        - Functional type (Result / Maybe / Either / Validation)
+        - Exception type
+        - Utility class
+        - ASP.NET Core integration
+    validations:
+      required: true
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope checklist
+      options:
+        - label: Fills a gap rather than duplicating existing BCL or third-party functionality
+        - label: Zero new external NuGet dependencies
+        - label: I am willing to help test or implement this

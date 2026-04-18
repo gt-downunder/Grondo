@@ -1,0 +1,26 @@
+{
+    "stryker-config": {
+        "project": "Grondo.csproj",
+        "solution": "../Grondo.sln",
+        "test-projects": [
+            "Grondo.Tests.csproj"
+        ],
+        "reporters": [
+            "progress",
+            "markdown",
+            "html",
+            "cleartext"
+        ],
+        "mutation-level": "Standard",
+        "thresholds": {
+            "high": 80,
+            "low": 60,
+            "break": 50
+        },
+        "concurrency": 4,
+        "mutate": [
+            "!**/obj/**",
+            "!**/bin/**"
+        ]
+    }
+}
