@@ -16,8 +16,8 @@
         <!-- NuGet package metadata -->
         <PackageId>Grondo</PackageId>
         <Title>Grondo</Title>
-        <Description>C# 14 / .NET 10 functional programming library with Result&lt;T&gt;, Maybe&lt;T&gt;, Either&lt;L,R&gt;, Validation&lt;T&gt;, LINQ query syntax support, and 30 extension method classes</Description>
-        <PackageTags>csharp dotnet extensions utilities exceptions functional-programming result maybe either validation linq railway-oriented-programming</PackageTags>
+        <Description>C# 14 / .NET 10 functional programming library with Result&lt;T&gt;, Result&lt;T,TError&gt;, Maybe&lt;T&gt;, Either&lt;L,R&gt;, Validation&lt;T&gt;, OneOf&lt;T1..T4&gt; discriminated unions, LINQ query syntax support, and 30+ extension method classes</Description>
+        <PackageTags>csharp dotnet extensions utilities exceptions functional-programming result maybe either validation oneof discriminated-union linq railway-oriented-programming</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageProjectUrl>https://github.com/gt-downunder/Grondo</PackageProjectUrl>
         <PackageReadmeFile>README.md</PackageReadmeFile>

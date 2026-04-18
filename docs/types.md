@@ -18,6 +18,7 @@ nav_order: 5
 | An operation with no return value that can succeed or fail             | `Result`                 |
 | Accumulated validation errors (collect all, don't short-circuit)       | `Validation<T>`          |
 | A value that is intrinsically one of two shapes (A or B)               | `Either<TLeft, TRight>`  |
+| A value that is one of three or four unrelated shapes                  | `OneOf<T1,T2,T3[,T4]>`   |
 | A structured error value for APIs                                      | `Error`                  |
 
 ---
@@ -432,6 +433,71 @@ return result.Match(
     onLeft: error => BadRequest(new { errors = error.Fields }),
     onRight: order => Ok(order));
 ```
+
+---
+
+## OneOf\<T1, T2\[, T3\[, T4\]\]\>
+
+A `readonly struct` discriminated union that holds exactly one value out of 2, 3, or 4 unrelated
+types. Unlike `Either<TLeft, TRight>`, no slot is privileged — use `OneOf` when the alternatives
+are peers (e.g. "the API returns a `User`, a `ValidationError`, or a `NotFoundError`") rather
+than a success/failure split.
+
+```csharp
+public OneOf<User, NotFoundError, ValidationError> GetUser(Guid id)
+{
+    if (!Guid.TryParse(id.ToString(), out _)) return new ValidationError("Bad id");
+    var user = _repo.Find(id);
+    if (user is null) return new NotFoundError(id);
+    return user;  // implicit conversions select the right slot
+}
+
+// Exhaustive match
+string message = GetUser(id).Match(
+    user     => $"Hello, {user.Name}",
+    notFound => $"User {notFound.Id} not found",
+    invalid  => $"Bad request: {invalid.Message}");
+
+// Side-effect dispatch
+GetUser(id).Switch(
+    user     => Log.Info($"Found {user.Name}"),
+    notFound => Log.Warn($"Missing {notFound.Id}"),
+    invalid  => Log.Warn($"Invalid input: {invalid.Message}"));
+
+// Type predicates and typed accessors
+var result = GetUser(id);
+if (result.IsT0) return Ok(result.AsT0);
+if (result.IsT1) return NotFound();
+return BadRequest(result.AsT2.Message);
+
+// Map a single slot
+OneOf<string, NotFoundError> summary = result
+    .MapT0(user => user.Name)                         // only available on OneOf<T1,T2>
+    .MapT1(notFound => notFound /* same type */);
+```
+
+### API at a glance
+
+| Member | Available on | Purpose |
+|---|---|---|
+| `Index`, `Value` | all arities | Zero-based slot index; value as `object` |
+| `IsT0` … `IsTN` | all arities | Type predicates |
+| `AsT0` … `AsTN` | all arities | Typed accessors (throw if wrong slot) |
+| `FromT0` … `FromTN` | all arities | Explicit factories (use when `T1 == T2`) |
+| Implicit conversions from each `T` | all arities | `OneOf<A, B> x = value;` |
+| `Match<TResult>(…)` | all arities | Exhaustive pattern match, returns a value |
+| `Switch(…)` | all arities | Exhaustive pattern match, side effects |
+| `MapT0`, `MapT1` | `OneOf<T1, T2>` only | Transform one slot, preserve the other |
+| `Equals`, `==`, `!=`, `GetHashCode`, `ToString` | all arities | Value equality |
+
+### Notes and caveats
+
+- The implicit conversions use source type identity. If the generic arguments are instantiated
+  with the same type (e.g. `OneOf<string, string>`), use the explicit `FromT0` / `FromT1`
+  factories — conversions are ambiguous otherwise.
+- `null` values are rejected by the factories and implicit conversions (`ArgumentNullException`).
+- `MapT2` / `MapT3` are deliberately omitted from the 3- and 4-arity variants to keep the API
+  small; use `Match` instead when you need to rebuild a `OneOf` after transforming any slot.
 
 ---
 

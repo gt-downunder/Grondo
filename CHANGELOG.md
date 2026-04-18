@@ -1,4 +1,4 @@
-# Changelog
+﻿# Changelog
 
 All notable changes to this project will be documented in this file.
 
@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `Forbidden`, `Conflict`, `Unexpected`.
 - `Combinators` static class: `Sequence`/`Traverse` for `Result<T>`, `Maybe<T>`, `Validation<T>`,
   and `Result<T, TError>`.
+- `OneOf<T1, T2>`, `OneOf<T1, T2, T3>`, `OneOf<T1, T2, T3, T4>` — discriminated unions for values
+  that are one of N peer types, with `Match`, `Switch`, `IsTN`/`AsTN`, implicit conversions,
+  `FromTN` factories, and value equality. `OneOf<T1, T2>` additionally has `MapT0`/`MapT1`.
 - `Either<L, R>`: `Swap`, `BiMap`, `TapBoth`, `ToValidation`, typed `ToResult()`, `Select`,
   `SelectMany` (LINQ query syntax).
 - `Maybe<T>`: `AsEnumerable`, `ToArray`, `ToList`.
@@ -51,7 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Tooling & Infrastructure
 - `.editorconfig` with repo-wide formatting rules.
-- Community health files: `CODE_OF_CONDUCT.md`, `SECURITY.md`, issue and PR templates.
+- Community health files: `SECURITY.md`, issue and PR templates.
 - PR CI: build-and-publish workflow now runs on `pull_request` (publish job remains gated).
 - Weekly mutation-testing workflow (Stryker.NET) and PR-triggered benchmark workflow.
 - Property-based tests for monad laws (`Maybe`, `Result`, `Either`) via FsCheck 3.
