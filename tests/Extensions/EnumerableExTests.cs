@@ -394,5 +394,45 @@ namespace Grondo.Tests.Extensions
         [TestMethod]
         public void TagFirstLast_Empty_ReturnsEmpty() =>
             Array.Empty<string>().TagFirstLast((item, first, last) => item).Should().BeEmpty();
+
+        [TestMethod]
+        public void HasDuplicates_WithDuplicates_ReturnsTrue() =>
+            new[] { 1, 2, 3, 2 }.HasDuplicates().Should().BeTrue();
+
+        [TestMethod]
+        public void HasDuplicates_Unique_ReturnsFalse() =>
+            new[] { 1, 2, 3 }.HasDuplicates().Should().BeFalse();
+
+        [TestMethod]
+        public void HasDuplicates_Empty_ReturnsFalse() =>
+            Array.Empty<int>().HasDuplicates().Should().BeFalse();
+
+        [TestMethod]
+        public void None_NoMatches_ReturnsTrue() =>
+            new[] { 1, 2, 3 }.None(x => x > 10).Should().BeTrue();
+
+        [TestMethod]
+        public void None_HasMatch_ReturnsFalse() =>
+            new[] { 1, 2, 3 }.None(x => x == 2).Should().BeFalse();
+
+        [TestMethod]
+        public void Cycle_InfinitelyRepeats()
+        {
+            int[] source = [1, 2, 3];
+            int[] taken = [.. source.Cycle().Take(7)];
+            taken.Should().BeEquivalentTo([1, 2, 3, 1, 2, 3, 1], o => o.WithStrictOrdering());
+        }
+
+        [TestMethod]
+        public void Cycle_Empty_ThrowsOnEnumeration() =>
+            FluentActions.Invoking(() => Array.Empty<int>().Cycle().Take(1).ToArray())
+                .Should().Throw<InvalidOperationException>();
+
+        [TestMethod]
+        public void Flatten_FlattensNestedSequences()
+        {
+            IEnumerable<IEnumerable<int>> nested = [[1, 2], [3], [4, 5]];
+            nested.Flatten().Should().BeEquivalentTo([1, 2, 3, 4, 5], o => o.WithStrictOrdering());
+        }
     }
 }

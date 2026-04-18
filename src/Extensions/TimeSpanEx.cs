@@ -53,6 +53,31 @@
                 string result = string.Join(" ", parts);
                 return timeSpan < TimeSpan.Zero ? $"-{result}" : result;
             }
+
+            /// <summary>
+            /// Formats the <see cref="TimeSpan"/> as a clock string (HH:MM:SS), supporting durations longer than 24 hours.
+            /// </summary>
+            /// <returns>A string such as "01:05:30" or "27:10:00" for durations over a day.</returns>
+            public string ToClockString()
+            {
+                TimeSpan abs = timeSpan < TimeSpan.Zero ? timeSpan.Negate() : timeSpan;
+                string result = string.Format(
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    "{0:D2}:{1:D2}:{2:D2}",
+                    (int)abs.TotalHours,
+                    abs.Minutes,
+                    abs.Seconds);
+
+                return timeSpan < TimeSpan.Zero ? "-" + result : result;
+            }
+
+            /// <summary>Determines whether the <see cref="TimeSpan"/> is greater than zero.</summary>
+            /// <returns><c>true</c> if positive; otherwise, <c>false</c>.</returns>
+            public bool IsPositive() => timeSpan > TimeSpan.Zero;
+
+            /// <summary>Determines whether the <see cref="TimeSpan"/> is less than zero.</summary>
+            /// <returns><c>true</c> if negative; otherwise, <c>false</c>.</returns>
+            public bool IsNegative() => timeSpan < TimeSpan.Zero;
         }
 
         internal static string Pluralize(int count, string unit) =>

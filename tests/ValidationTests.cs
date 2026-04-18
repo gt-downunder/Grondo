@@ -1,5 +1,4 @@
-using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using FluentAssertions;
 
 namespace Grondo.Tests
 {
@@ -45,7 +44,7 @@ namespace Grondo.Tests
         public void Apply_BothValid_AppliesFunction()
         {
             var vf = Validation<Func<int, int>>.Valid(x => x + 10);
-            var v = Validation<int>.Valid(5).Apply(vf);
+            Validation<int> v = Validation<int>.Valid(5).Apply(vf);
             v.IsValid.Should().BeTrue();
             v.Value.Should().Be(15);
         }
@@ -54,7 +53,7 @@ namespace Grondo.Tests
         public void Apply_FuncInvalid_AccumulatesFuncErrors()
         {
             var vf = Validation<Func<int, int>>.Invalid("no-func");
-            var v = Validation<int>.Valid(5).Apply(vf);
+            Validation<int> v = Validation<int>.Valid(5).Apply(vf);
             v.IsInvalid.Should().BeTrue();
             v.Errors.Should().BeEquivalentTo(["no-func"]);
         }
@@ -63,7 +62,7 @@ namespace Grondo.Tests
         public void Apply_ValueInvalid_AccumulatesValueErrors()
         {
             var vf = Validation<Func<int, int>>.Valid(x => x);
-            var v = Validation<int>.Invalid("no-val").Apply(vf);
+            Validation<int> v = Validation<int>.Invalid("no-val").Apply(vf);
             v.IsInvalid.Should().BeTrue();
             v.Errors.Should().BeEquivalentTo(["no-val"]);
         }
@@ -72,7 +71,7 @@ namespace Grondo.Tests
         public void Apply_BothInvalid_AccumulatesAllErrors()
         {
             var vf = Validation<Func<int, int>>.Invalid("e1");
-            var v = Validation<int>.Invalid("e2", "e3").Apply(vf);
+            Validation<int> v = Validation<int>.Invalid("e2", "e3").Apply(vf);
             v.IsInvalid.Should().BeTrue();
             v.Errors.Should().BeEquivalentTo(["e1", "e2", "e3"]);
         }

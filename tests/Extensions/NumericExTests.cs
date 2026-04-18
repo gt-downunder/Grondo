@@ -116,6 +116,43 @@ namespace Grondo.Tests.Extensions
 
         [TestMethod]
         public void Milliseconds_Double_ReturnsCorrectTimeSpan() => 100.5.Milliseconds().Should().Be(TimeSpan.FromMilliseconds(100.5));
+
+        [TestMethod]
+        public void ClampTo_BelowMin_ReturnsMin() => 3.ClampTo(5, 10).Should().Be(5);
+
+        [TestMethod]
+        public void ClampTo_AboveMax_ReturnsMax() => 15.ClampTo(5, 10).Should().Be(10);
+
+        [TestMethod]
+        public void ClampTo_InRange_ReturnsValue() => 7.ClampTo(5, 10).Should().Be(7);
+
+        [TestMethod]
+        public void ClampTo_InvalidRange_Throws() =>
+            FluentActions.Invoking(() => 5.ClampTo(10, 3)).Should().Throw<ArgumentException>();
+
+        [TestMethod]
+        public void IsBetween_InRange_ReturnsTrue() => 5.IsBetween(1, 10).Should().BeTrue();
+
+        [TestMethod]
+        public void IsBetween_AtBoundary_ReturnsTrue() => 10.IsBetween(1, 10).Should().BeTrue();
+
+        [TestMethod]
+        public void IsBetween_OutOfRange_ReturnsFalse() => 11.IsBetween(1, 10).Should().BeFalse();
+
+        [TestMethod]
+        public void RoundTo_Double_RoundsToDecimals() => 3.14159.RoundTo(2).Should().Be(3.14);
+
+        [TestMethod]
+        public void RoundTo_Decimal_RoundsToDecimals() => 3.14159m.RoundTo(3).Should().Be(3.142m);
+
+        [TestMethod]
+        public void PercentageOf_Double_ReturnsRatio() => 25.0.PercentageOf(200.0).Should().Be(12.5);
+
+        [TestMethod]
+        public void PercentageOf_Double_ZeroTotal_ReturnsZero() => 25.0.PercentageOf(0.0).Should().Be(0.0);
+
+        [TestMethod]
+        public void PercentageOf_Decimal_ReturnsRatio() => 25m.PercentageOf(200m).Should().Be(12.5m);
     }
 }
 

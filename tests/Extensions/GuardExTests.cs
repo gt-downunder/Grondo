@@ -195,5 +195,21 @@ namespace Grondo.Tests.Extensions
             FluentActions.Invoking(() => default(string).ThrowIfInvalidFormat(@"\d+", "p"))
                 .Should().Throw<ArgumentNullException>();
         }
+
+        [TestMethod]
+        public void ThrowIfLessThan_Below_Throws() =>
+            FluentActions.Invoking(() => 3.ThrowIfLessThan(5)).Should().Throw<ArgumentOutOfRangeException>();
+
+        [TestMethod]
+        public void ThrowIfLessThan_AtOrAbove_Returns() =>
+            5.ThrowIfLessThan(5).Should().Be(5);
+
+        [TestMethod]
+        public void ThrowIfGreaterThan_Above_Throws() =>
+            FluentActions.Invoking(() => 11.ThrowIfGreaterThan(10)).Should().Throw<ArgumentOutOfRangeException>();
+
+        [TestMethod]
+        public void ThrowIfGreaterThan_AtOrBelow_Returns() =>
+            10.ThrowIfGreaterThan(10).Should().Be(10);
     }
 }

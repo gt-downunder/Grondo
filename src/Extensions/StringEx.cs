@@ -21,6 +21,9 @@ namespace Grondo.Extensions
         [GeneratedRegex("(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|[-_]")]
         private static partial Regex WordBoundaryRegex();
 
+        [GeneratedRegex("<[^>]+>")]
+        private static partial Regex HtmlTagRegex();
+
         private static readonly EmailAddressAttribute _emailAddressValidator = new();
 
         /// <summary>
@@ -332,6 +335,148 @@ namespace Grondo.Extensions
                     str.AsSpan().CopyTo(span);
                     span.Reverse();
                 });
+            }
+
+            /// <summary>
+            /// Converts the string to PascalCase (e.g., "my_property_name" → "MyPropertyName").
+            /// Handles PascalCase, camelCase, snake_case, and kebab-case inputs.
+            /// </summary>
+            /// <returns>The string in PascalCase.</returns>
+            public string ToPascalCase()
+            {
+                if (string.IsNullOrEmpty(value)) return value ?? string.Empty;
+                string[] words = SplitIntoWords(value);
+                if (words.Length == 0) return string.Empty;
+
+                var sb = new StringBuilder();
+                foreach (string word in words)
+                {
+                    if (word.Length == 0) continue;
+                    sb.Append(char.ToUpperInvariant(word[0]));
+                    sb.Append(word[1..].ToLowerInvariant());
+                }
+
+                return sb.ToString();
+            }
+
+            /// <summary>
+            /// Converts the string to Title Case (e.g., "hello world" → "Hello World").
+            /// Uses invariant culture casing rules.
+            /// </summary>
+            /// <returns>The string in Title Case.</returns>
+            public string ToTitleCase()
+            {
+                if (string.IsNullOrEmpty(value)) return value ?? string.Empty;
+                return System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(value.ToLowerInvariant());
+            }
+
+            /// <summary>
+            /// Removes HTML tags from the string, leaving only the text content.
+            /// </summary>
+            /// <returns>The string with all HTML tags stripped.</returns>
+            public string StripHtml()
+            {
+                if (string.IsNullOrEmpty(value)) return value ?? string.Empty;
+                return HtmlTagRegex().Replace(value, string.Empty);
+            }
+
+            /// <summary>
+            /// Returns the number of whitespace-separated words in the string.
+            /// </summary>
+            /// <returns>The word count. Returns 0 for null or whitespace-only strings.</returns>
+            public int WordCount()
+            {
+                if (string.IsNullOrWhiteSpace(value)) return 0;
+                return value.Split([' ', '\t', '\n', '\r'], StringSplitOptions.RemoveEmptyEntries).Length;
+            }
+
+            /// <summary>
+            /// Removes diacritical marks (accents) from the string.
+            /// </summary>
+            /// <returns>The string with accents removed (e.g., "café" → "cafe").</returns>
+            /// <exception cref="ArgumentNullException">Thrown if the string is null.</exception>
+            public string RemoveDiacritics()
+            {
+                ArgumentNullException.ThrowIfNull(value);
+
+                string normalized = value.Normalize(System.Text.NormalizationForm.FormD);
+                var sb = new StringBuilder(normalized.Length);
+                foreach (char c in normalized)
+                {
+                    if (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) != System.Globalization.UnicodeCategory.NonSpacingMark)
+                        sb.Append(c);
+                }
+
+                return sb.ToString().Normalize(System.Text.NormalizationForm.FormC);
+            }
+
+            /// <summary>
+            /// Repeats the string the specified number of times.
+            /// </summary>
+            /// <param name="count">The number of times to repeat. Must be non-negative.</param>
+            /// <returns>The repeated string.</returns>
+            /// <exception cref="ArgumentNullException">Thrown if the string is null.</exception>
+            /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="count"/> is negative.</exception>
+            public string Repeat(int count)
+            {
+                ArgumentNullException.ThrowIfNull(value);
+                ArgumentOutOfRangeException.ThrowIfNegative(count);
+
+                if (count == 0 || value.Length == 0) return string.Empty;
+                if (count == 1) return value;
+
+                return string.Create(value.Length * count, (value, count), static (span, state) =>
+                {
+                    ReadOnlySpan<char> src = state.value.AsSpan();
+                    for (int i = 0; i < state.count; i++)
+                        src.CopyTo(span[(i * src.Length)..]);
+                });
+            }
+
+            /// <summary>
+            /// Ensures the string starts with the specified prefix, prepending it if not already present.
+            /// </summary>
+            /// <param name="prefix">The prefix to ensure.</param>
+            /// <returns>The string guaranteed to start with <paramref name="prefix"/>.</returns>
+            /// <exception cref="ArgumentNullException">Thrown if the string or <paramref name="prefix"/> is null.</exception>
+            public string EnsureStartsWith(string prefix)
+            {
+                ArgumentNullException.ThrowIfNull(value);
+                ArgumentNullException.ThrowIfNull(prefix);
+                return value.StartsWith(prefix, StringComparison.Ordinal) ? value : prefix + value;
+            }
+
+            /// <summary>
+            /// Ensures the string ends with the specified suffix, appending it if not already present.
+            /// </summary>
+            /// <param name="suffix">The suffix to ensure.</param>
+            /// <returns>The string guaranteed to end with <paramref name="suffix"/>.</returns>
+            /// <exception cref="ArgumentNullException">Thrown if the string or <paramref name="suffix"/> is null.</exception>
+            public string EnsureEndsWith(string suffix)
+            {
+                ArgumentNullException.ThrowIfNull(value);
+                ArgumentNullException.ThrowIfNull(suffix);
+                return value.EndsWith(suffix, StringComparison.Ordinal) ? value : value + suffix;
+            }
+
+            /// <summary>
+            /// Replaces multiple substrings in one pass using the provided mapping.
+            /// </summary>
+            /// <param name="replacements">A dictionary mapping each substring to replace to its replacement.</param>
+            /// <returns>The string with all replacements applied.</returns>
+            /// <exception cref="ArgumentNullException">Thrown if the string or <paramref name="replacements"/> is null.</exception>
+            public string ReplaceMultiple(IReadOnlyDictionary<string, string> replacements)
+            {
+                ArgumentNullException.ThrowIfNull(value);
+                ArgumentNullException.ThrowIfNull(replacements);
+
+                if (replacements.Count == 0 || value.Length == 0) return value;
+
+                string result = value;
+                foreach (KeyValuePair<string, string> kv in replacements)
+                    result = result.Replace(kv.Key, kv.Value, StringComparison.Ordinal);
+
+                return result;
             }
         }
 

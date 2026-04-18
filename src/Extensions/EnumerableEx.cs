@@ -384,6 +384,80 @@
                 yield return resultSelector(current, isFirst, true);
             }
 
+            /// <summary>
+            /// Determines whether the sequence contains any duplicate elements using the default equality comparer.
+            /// </summary>
+            /// <returns><c>true</c> if the sequence has at least one duplicate; otherwise, <c>false</c>.</returns>
+            /// <exception cref="ArgumentNullException">Thrown if the source is null.</exception>
+            public bool HasDuplicates()
+            {
+                ArgumentNullException.ThrowIfNull(source);
+
+                var seen = new HashSet<T>();
+                foreach (T item in source)
+                {
+                    if (!seen.Add(item)) return true;
+                }
+                return false;
+            }
+
+            /// <summary>
+            /// Determines whether no elements of the sequence satisfy the specified predicate.
+            /// </summary>
+            /// <param name="predicate">The predicate to evaluate for each element.</param>
+            /// <returns><c>true</c> if no elements match; otherwise, <c>false</c>.</returns>
+            /// <exception cref="ArgumentNullException">Thrown if the source or <paramref name="predicate"/> is null.</exception>
+            public bool None(Func<T, bool> predicate)
+            {
+                ArgumentNullException.ThrowIfNull(source);
+                ArgumentNullException.ThrowIfNull(predicate);
+                return !source.Any(predicate);
+            }
+
+            /// <summary>
+            /// Returns an infinite sequence cycling through the elements of the source sequence.
+            /// </summary>
+            /// <returns>A lazily-evaluated infinite sequence. Callers must limit enumeration.</returns>
+            /// <exception cref="ArgumentNullException">Thrown if the source is null.</exception>
+            /// <exception cref="InvalidOperationException">Thrown if the source is empty when enumeration begins.</exception>
+            public IEnumerable<T> Cycle()
+            {
+                ArgumentNullException.ThrowIfNull(source);
+                return CycleIterator(source);
+
+                static IEnumerable<T> CycleIterator(IEnumerable<T> src)
+                {
+                    var buffer = new List<T>();
+                    foreach (T item in src)
+                    {
+                        buffer.Add(item);
+                        yield return item;
+                    }
+
+                    if (buffer.Count == 0)
+                        throw new InvalidOperationException("Cannot cycle an empty sequence.");
+
+                    while (true)
+                    {
+                        foreach (T item in buffer)
+                            yield return item;
+                    }
+                }
+            }
+        }
+
+        extension<T>(IEnumerable<IEnumerable<T>> source)
+        {
+            /// <summary>
+            /// Flattens a sequence of sequences into a single sequence by concatenation.
+            /// </summary>
+            /// <returns>A flat sequence containing all elements from all inner sequences.</returns>
+            /// <exception cref="ArgumentNullException">Thrown if the source is null.</exception>
+            public IEnumerable<T> Flatten()
+            {
+                ArgumentNullException.ThrowIfNull(source);
+                return source.SelectMany(x => x);
+            }
         }
 
         extension<T>(IEnumerable<T?> source)

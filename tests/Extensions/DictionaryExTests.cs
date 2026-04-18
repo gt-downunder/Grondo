@@ -142,5 +142,32 @@ namespace Grondo.Tests.Extensions
 
             callCount.Should().Be(1);
         }
+
+        [TestMethod]
+        public void AddOrUpdate_NewKey_Adds()
+        {
+            var dict = new Dictionary<string, int>();
+            int result = dict.AddOrUpdate("a", 1, (_, existing) => existing + 10);
+            result.Should().Be(1);
+            dict["a"].Should().Be(1);
+        }
+
+        [TestMethod]
+        public void AddOrUpdate_ExistingKey_Updates()
+        {
+            var dict = new Dictionary<string, int> { ["a"] = 5 };
+            int result = dict.AddOrUpdate("a", 1, (_, existing) => existing + 10);
+            result.Should().Be(15);
+            dict["a"].Should().Be(15);
+        }
+
+        [TestMethod]
+        public void RemoveWhere_RemovesMatchingEntries_ReturnsCount()
+        {
+            var dict = new Dictionary<string, int> { ["a"] = 1, ["b"] = 2, ["c"] = 3 };
+            int removed = dict.RemoveWhere(kv => kv.Value > 1);
+            removed.Should().Be(2);
+            dict.Should().ContainKey("a").And.NotContainKey("b").And.NotContainKey("c");
+        }
     }
 }

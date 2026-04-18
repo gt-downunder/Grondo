@@ -192,5 +192,59 @@ namespace Grondo.Tests.Extensions
 
         [TestMethod]
         public void ToRelativeTime_Future_ReturnsFutureFormat() => DateTimeOffset.UtcNow.AddHours(3).ToRelativeTime().Should().StartWith("in ");
+
+        [TestMethod]
+        public void StartOfWeek_PreservesOffset()
+        {
+            var wed = new DateTimeOffset(2026, 4, 22, 15, 0, 0, TimeSpan.FromHours(10));
+            DateTimeOffset start = wed.StartOfWeek();
+            start.Date.Should().Be(new DateTime(2026, 4, 20));
+            start.Offset.Should().Be(TimeSpan.FromHours(10));
+        }
+
+        [TestMethod]
+        public void EndOfWeek_ReturnsLastTickOfSunday()
+        {
+            var wed = new DateTimeOffset(2026, 4, 22, 15, 0, 0, TimeSpan.Zero);
+            wed.EndOfWeek().Date.Should().Be(new DateTime(2026, 4, 26));
+        }
+
+        [TestMethod]
+        public void StartOfYear_ReturnsJan1() =>
+            new DateTimeOffset(2026, 6, 15, 10, 0, 0, TimeSpan.Zero).StartOfYear().Should().Be(new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero));
+
+        [TestMethod]
+        public void EndOfYear_ReturnsLastTickOfDec31() =>
+            new DateTimeOffset(2026, 6, 15, 0, 0, 0, TimeSpan.Zero).EndOfYear().Should().Be(new DateTimeOffset(2026, 12, 31, 23, 59, 59, TimeSpan.Zero).AddTicks(9999999));
+
+        [TestMethod]
+        public void Age_ReturnsYearsSinceBirth()
+        {
+            DateTimeOffset birth = DateTimeOffset.UtcNow.AddYears(-30).AddDays(-1);
+            birth.Age().Should().Be(30);
+        }
+
+        [TestMethod]
+        public void AgeAt_BeforeBirthday_ReturnsOneLess() =>
+            new DateTimeOffset(2000, 6, 15, 0, 0, 0, TimeSpan.Zero).AgeAt(new DateTimeOffset(2026, 6, 14, 0, 0, 0, TimeSpan.Zero)).Should().Be(25);
+
+        [TestMethod]
+        public void IsToday_Today_ReturnsTrue() => DateTimeOffset.UtcNow.IsToday().Should().BeTrue();
+
+        [TestMethod]
+        public void IsInPast_Past_ReturnsTrue() => DateTimeOffset.UtcNow.AddMinutes(-5).IsInPast().Should().BeTrue();
+
+        [TestMethod]
+        public void IsInFuture_Future_ReturnsTrue() => DateTimeOffset.UtcNow.AddMinutes(5).IsInFuture().Should().BeTrue();
+
+        [TestMethod]
+        public void DaysUntil_FutureDate_ReturnsPositive() =>
+            new DateTimeOffset(DateTime.UtcNow.Date.AddDays(7), TimeSpan.Zero).DaysUntil().Should().Be(7);
+
+        [TestMethod]
+        [DataRow(2024, true)]
+        [DataRow(2025, false)]
+        public void IsLeapYear_ReturnsExpected(int year, bool expected) =>
+            new DateTimeOffset(year, 1, 1, 0, 0, 0, TimeSpan.Zero).IsLeapYear().Should().Be(expected);
     }
 }

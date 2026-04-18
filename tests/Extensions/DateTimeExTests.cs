@@ -239,5 +239,84 @@ namespace Grondo.Tests.Extensions
 
         [TestMethod]
         public void ToRelativeTime_Future_ReturnsFutureFormat() => DateTime.UtcNow.AddHours(3).ToRelativeTime().Should().StartWith("in ");
+
+        [TestMethod]
+        public void StartOfWeek_MondayDefault_ReturnsMonday()
+        {
+            var wednesday = new DateTime(2026, 4, 22, 15, 30, 0, DateTimeKind.Utc); // Wednesday
+            wednesday.StartOfWeek().Should().Be(new DateTime(2026, 4, 20, 0, 0, 0, DateTimeKind.Utc));
+        }
+
+        [TestMethod]
+        public void EndOfWeek_ReturnsLastTickOfSunday()
+        {
+            var wednesday = new DateTime(2026, 4, 22, 15, 30, 0, DateTimeKind.Utc);
+            DateTime end = wednesday.EndOfWeek();
+            end.Date.Should().Be(new DateTime(2026, 4, 26));
+            end.TimeOfDay.Should().BeCloseTo(TimeSpan.FromDays(1) - TimeSpan.FromTicks(1), TimeSpan.FromMilliseconds(1));
+        }
+
+        [TestMethod]
+        public void StartOfYear_ReturnsJan1() =>
+            new DateTime(2026, 6, 15, 10, 0, 0, DateTimeKind.Utc).StartOfYear().Should().Be(new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+
+        [TestMethod]
+        public void EndOfYear_ReturnsLastTickOfDec31() =>
+            new DateTime(2026, 6, 15).EndOfYear().Should().Be(new DateTime(2026, 12, 31, 23, 59, 59).AddTicks(9999999));
+
+        [TestMethod]
+        public void Age_ReturnsYearsSinceBirth()
+        {
+            DateTime birth = DateTime.UtcNow.AddYears(-30).AddDays(-1);
+            birth.Age().Should().Be(30);
+        }
+
+        [TestMethod]
+        public void AgeAt_BeforeBirthday_ReturnsOneLess() =>
+            new DateTime(2000, 6, 15).AgeAt(new DateTime(2026, 6, 14)).Should().Be(25);
+
+        [TestMethod]
+        public void AgeAt_AfterBirthday_ReturnsFull() =>
+            new DateTime(2000, 6, 15).AgeAt(new DateTime(2026, 6, 16)).Should().Be(26);
+
+        [TestMethod]
+        public void ToUnixTimeSeconds_Epoch_ReturnsZero() =>
+            new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).ToUnixTimeSeconds().Should().Be(0);
+
+        [TestMethod]
+        public void ToUnixTimeMilliseconds_Epoch_ReturnsZero() =>
+            new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).ToUnixTimeMilliseconds().Should().Be(0);
+
+        [TestMethod]
+        public void IsToday_Today_ReturnsTrue() =>
+            DateTime.UtcNow.IsToday().Should().BeTrue();
+
+        [TestMethod]
+        public void IsToday_Yesterday_ReturnsFalse() =>
+            DateTime.UtcNow.AddDays(-1).IsToday().Should().BeFalse();
+
+        [TestMethod]
+        public void IsInPast_Past_ReturnsTrue() =>
+            DateTime.UtcNow.AddMinutes(-5).IsInPast().Should().BeTrue();
+
+        [TestMethod]
+        public void IsInFuture_Future_ReturnsTrue() =>
+            DateTime.UtcNow.AddMinutes(5).IsInFuture().Should().BeTrue();
+
+        [TestMethod]
+        public void DaysUntil_FutureDate_ReturnsPositive() =>
+            DateTime.UtcNow.Date.AddDays(7).DaysUntil().Should().Be(7);
+
+        [TestMethod]
+        public void DaysUntil_PastDate_ReturnsNegative() =>
+            DateTime.UtcNow.Date.AddDays(-3).DaysUntil().Should().Be(-3);
+
+        [TestMethod]
+        [DataRow(2024, true)]
+        [DataRow(2025, false)]
+        [DataRow(2000, true)]
+        [DataRow(1900, false)]
+        public void IsLeapYear_ReturnsExpected(int year, bool expected) =>
+            new DateTime(year, 1, 1).IsLeapYear().Should().Be(expected);
     }
 }

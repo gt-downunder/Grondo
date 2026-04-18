@@ -211,6 +211,49 @@ namespace Grondo.Tests.Extensions
             attempt.Should().Be(2);
         }
 
+        [TestMethod]
+        public async Task WithCancellation_Generic_CompletesNormally_WhenNotCancelled()
+        {
+            Task<int> task = Task.FromResult(42);
+            using var cts = new CancellationTokenSource();
+            int result = await task.WithCancellationAsync(cts.Token);
+            result.Should().Be(42);
+        }
+
+        [TestMethod]
+        public async Task WithCancellation_Generic_Throws_WhenCancelled()
+        {
+            var tcs = new TaskCompletionSource<int>();
+            using var cts = new CancellationTokenSource();
+            Task<int> cancellable = tcs.Task.WithCancellationAsync(cts.Token);
+
+            await cts.CancelAsync();
+
+            await FluentActions.Invoking(async () => await cancellable)
+                .Should().ThrowAsync<OperationCanceledException>();
+        }
+
+        [TestMethod]
+        public async Task WithCancellation_NonGeneric_CompletesNormally()
+        {
+            Task task = Task.CompletedTask;
+            using var cts = new CancellationTokenSource();
+            await task.WithCancellationAsync(cts.Token);
+        }
+
+        [TestMethod]
+        public async Task WithCancellation_NonGeneric_Throws_WhenCancelled()
+        {
+            var tcs = new TaskCompletionSource();
+            using var cts = new CancellationTokenSource();
+            Task cancellable = tcs.Task.WithCancellationAsync(cts.Token);
+
+            await cts.CancelAsync();
+
+            await FluentActions.Invoking(async () => await cancellable)
+                .Should().ThrowAsync<OperationCanceledException>();
+        }
+
         public TestContext TestContext { get; set; } = null!;
     }
 }

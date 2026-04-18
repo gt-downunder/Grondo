@@ -77,6 +77,30 @@ namespace Grondo.Tests.Extensions
             string result = ts.ToHumanReadable(maxParts: 1);
             result.Should().Be("2 days");
         }
+
+        [TestMethod]
+        public void ToClockString_FormatsHoursMinutesSeconds() =>
+            new TimeSpan(1, 5, 30).ToClockString().Should().Be("01:05:30");
+
+        [TestMethod]
+        public void ToClockString_OverTwentyFourHours_KeepsHours() =>
+            new TimeSpan(1, 3, 10, 0).ToClockString().Should().Be("27:10:00");
+
+        [TestMethod]
+        public void ToClockString_Negative_HasMinusPrefix() =>
+            TimeSpan.FromSeconds(-65).ToClockString().Should().Be("-00:01:05");
+
+        [TestMethod]
+        public void IsPositive_PositiveTimeSpan_ReturnsTrue() =>
+            TimeSpan.FromSeconds(1).IsPositive().Should().BeTrue();
+
+        [TestMethod]
+        public void IsNegative_NegativeTimeSpan_ReturnsTrue() =>
+            TimeSpan.FromSeconds(-1).IsNegative().Should().BeTrue();
+
+        [TestMethod]
+        public void IsPositive_Zero_ReturnsFalse() =>
+            TimeSpan.Zero.IsPositive().Should().BeFalse();
     }
 }
 

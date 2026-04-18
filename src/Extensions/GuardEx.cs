@@ -314,6 +314,30 @@ namespace Grondo.Extensions
                 value < min || value > max
                     ? throw new ArgumentOutOfRangeException(paramName, value, $"Value must be between {min} and {max}.")
                     : value;
+
+            /// <summary>
+            /// Throws <see cref="ArgumentOutOfRangeException"/> if the value is less than the specified minimum.
+            /// </summary>
+            /// <param name="min">The minimum allowed value (inclusive).</param>
+            /// <param name="paramName">The name of the parameter.</param>
+            /// <returns>The validated value.</returns>
+            /// <exception cref="ArgumentOutOfRangeException">Thrown if the value is less than <paramref name="min"/>.</exception>
+            public T ThrowIfLessThan(T min, string? paramName = null) =>
+                value < min
+                    ? throw new ArgumentOutOfRangeException(paramName, value, $"Value must be greater than or equal to {min}.")
+                    : value;
+
+            /// <summary>
+            /// Throws <see cref="ArgumentOutOfRangeException"/> if the value is greater than the specified maximum.
+            /// </summary>
+            /// <param name="max">The maximum allowed value (inclusive).</param>
+            /// <param name="paramName">The name of the parameter.</param>
+            /// <returns>The validated value.</returns>
+            /// <exception cref="ArgumentOutOfRangeException">Thrown if the value is greater than <paramref name="max"/>.</exception>
+            public T ThrowIfGreaterThan(T max, string? paramName = null) =>
+                value > max
+                    ? throw new ArgumentOutOfRangeException(paramName, value, $"Value must be less than or equal to {max}.")
+                    : value;
         }
 
         extension<T>(T value)

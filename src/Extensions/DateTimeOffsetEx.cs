@@ -97,6 +97,94 @@ namespace Grondo.Extensions
             /// <returns>A relative time string.</returns>
             public string ToRelativeTime() =>
                 TimeSpanEx.FormatRelativeTime(DateTimeOffset.UtcNow - date.ToUniversalTime());
+
+            /// <summary>
+            /// Returns the start of the week containing the specified date, preserving its offset.
+            /// </summary>
+            /// <param name="firstDayOfWeek">The day considered the first day of the week. Defaults to <see cref="DayOfWeek.Monday"/>.</param>
+            /// <returns>A new <see cref="DateTimeOffset"/> at the start of the week.</returns>
+            public DateTimeOffset StartOfWeek(DayOfWeek firstDayOfWeek = DayOfWeek.Monday)
+            {
+                int diff = (7 + (date.DayOfWeek - firstDayOfWeek)) % 7;
+                return new DateTimeOffset(date.Year, date.Month, date.Day, 0, 0, 0, date.Offset).AddDays(-diff);
+            }
+
+            /// <summary>
+            /// Returns the end of the week containing the specified date (last tick of the last day).
+            /// </summary>
+            /// <param name="firstDayOfWeek">The day considered the first day of the week. Defaults to <see cref="DayOfWeek.Monday"/>.</param>
+            /// <returns>A new <see cref="DateTimeOffset"/> at the last tick of the week.</returns>
+            public DateTimeOffset EndOfWeek(DayOfWeek firstDayOfWeek = DayOfWeek.Monday) =>
+                date.StartOfWeek(firstDayOfWeek).AddDays(7).AddTicks(-1);
+
+            /// <summary>
+            /// Returns a new <see cref="DateTimeOffset"/> representing the first day of the year.
+            /// </summary>
+            /// <returns>A new <see cref="DateTimeOffset"/> at the start of the first day of the year.</returns>
+            public DateTimeOffset StartOfYear() =>
+                new(date.Year, 1, 1, 0, 0, 0, date.Offset);
+
+            /// <summary>
+            /// Returns a new <see cref="DateTimeOffset"/> representing the end of the last day of the year.
+            /// </summary>
+            /// <returns>A new <see cref="DateTimeOffset"/> at the last tick of the year.</returns>
+            public DateTimeOffset EndOfYear() =>
+                new DateTimeOffset(date.Year, 1, 1, 0, 0, 0, date.Offset).AddYears(1).AddTicks(-1);
+
+            /// <summary>
+            /// Calculates the age in whole years from the specified date to the current UTC time.
+            /// </summary>
+            /// <returns>The age in whole years.</returns>
+            public int Age() =>
+                date.AgeAt(DateTimeOffset.UtcNow);
+
+            /// <summary>
+            /// Calculates the age in whole years from the specified date to a reference date.
+            /// </summary>
+            /// <param name="asOf">The reference date.</param>
+            /// <returns>The age in whole years.</returns>
+            public int AgeAt(DateTimeOffset asOf)
+            {
+                int years = asOf.Year - date.Year;
+                if (asOf.Month < date.Month || (asOf.Month == date.Month && asOf.Day < date.Day))
+                    years--;
+                return years;
+            }
+
+            /// <summary>
+            /// Determines whether the specified date falls on the current UTC day.
+            /// </summary>
+            /// <returns><c>true</c> if the date is today (UTC); otherwise, <c>false</c>.</returns>
+            public bool IsToday() =>
+                date.UtcDateTime.Date == DateTime.UtcNow.Date;
+
+            /// <summary>
+            /// Determines whether the specified date is strictly before the current UTC time.
+            /// </summary>
+            /// <returns><c>true</c> if the date is in the past; otherwise, <c>false</c>.</returns>
+            public bool IsInPast() =>
+                date < DateTimeOffset.UtcNow;
+
+            /// <summary>
+            /// Determines whether the specified date is strictly after the current UTC time.
+            /// </summary>
+            /// <returns><c>true</c> if the date is in the future; otherwise, <c>false</c>.</returns>
+            public bool IsInFuture() =>
+                date > DateTimeOffset.UtcNow;
+
+            /// <summary>
+            /// Returns the number of whole days from the current UTC date to the specified date.
+            /// </summary>
+            /// <returns>The number of days until the date (negative if in the past).</returns>
+            public int DaysUntil() =>
+                (int)(date.UtcDateTime.Date - DateTime.UtcNow.Date).TotalDays;
+
+            /// <summary>
+            /// Determines whether the specified date falls in a leap year.
+            /// </summary>
+            /// <returns><c>true</c> if the date's year is a leap year; otherwise, <c>false</c>.</returns>
+            public bool IsLeapYear() =>
+                DateTime.IsLeapYear(date.Year);
         }
 
         extension(DateTimeOffset? date)

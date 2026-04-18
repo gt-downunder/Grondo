@@ -23,6 +23,69 @@ namespace Grondo.Extensions
             /// <summary>Determines whether the numeric value is less than zero.</summary>
             /// <returns><c>true</c> if the value is less than zero; otherwise, <c>false</c>.</returns>
             public bool IsNegative() => number < T.Zero;
+
+            /// <summary>
+            /// Returns the numeric value clamped to the inclusive range [<paramref name="min"/>, <paramref name="max"/>].
+            /// </summary>
+            /// <param name="min">The minimum allowed value.</param>
+            /// <param name="max">The maximum allowed value.</param>
+            /// <returns>The clamped value.</returns>
+            /// <exception cref="ArgumentException">Thrown if <paramref name="min"/> is greater than <paramref name="max"/>.</exception>
+            public T ClampTo(T min, T max)
+            {
+                if (min > max)
+                    throw new ArgumentException($"min ({min}) cannot be greater than max ({max}).", nameof(min));
+                return T.Clamp(number, min, max);
+            }
+
+            /// <summary>
+            /// Determines whether the numeric value falls within the inclusive range [<paramref name="min"/>, <paramref name="max"/>].
+            /// </summary>
+            /// <param name="min">The minimum allowed value (inclusive).</param>
+            /// <param name="max">The maximum allowed value (inclusive).</param>
+            /// <returns><c>true</c> if the value is in range; otherwise, <c>false</c>.</returns>
+            public bool IsBetween(T min, T max) =>
+                number >= min && number <= max;
+        }
+
+        extension(double number)
+        {
+            /// <summary>
+            /// Rounds the value to the specified number of decimal places.
+            /// </summary>
+            /// <param name="decimals">The number of fractional digits (0-15).</param>
+            /// <param name="mode">The rounding strategy. Defaults to <see cref="MidpointRounding.ToEven"/>.</param>
+            /// <returns>The rounded value.</returns>
+            public double RoundTo(int decimals, MidpointRounding mode = MidpointRounding.ToEven) =>
+                Math.Round(number, decimals, mode);
+
+            /// <summary>
+            /// Calculates <paramref name="number"/> as a percentage of <paramref name="total"/>.
+            /// </summary>
+            /// <param name="total">The total value that represents 100%.</param>
+            /// <returns>The percentage of <paramref name="total"/>, or 0 when <paramref name="total"/> is 0.</returns>
+            public double PercentageOf(double total) =>
+                total == 0 ? 0 : number / total * 100d;
+        }
+
+        extension(decimal number)
+        {
+            /// <summary>
+            /// Rounds the value to the specified number of decimal places.
+            /// </summary>
+            /// <param name="decimals">The number of fractional digits.</param>
+            /// <param name="mode">The rounding strategy. Defaults to <see cref="MidpointRounding.ToEven"/>.</param>
+            /// <returns>The rounded value.</returns>
+            public decimal RoundTo(int decimals, MidpointRounding mode = MidpointRounding.ToEven) =>
+                Math.Round(number, decimals, mode);
+
+            /// <summary>
+            /// Calculates <paramref name="number"/> as a percentage of <paramref name="total"/>.
+            /// </summary>
+            /// <param name="total">The total value that represents 100%.</param>
+            /// <returns>The percentage of <paramref name="total"/>, or 0 when <paramref name="total"/> is 0.</returns>
+            public decimal PercentageOf(decimal total) =>
+                total == 0m ? 0m : number / total * 100m;
         }
 
         extension(long bytes)

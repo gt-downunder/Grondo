@@ -124,6 +124,48 @@ namespace Grondo.Extensions
                 source[key] = newValue;
                 return newValue;
             }
+
+            /// <summary>
+            /// Adds a value to the dictionary for the specified key, or updates the existing value using the provided update function.
+            /// </summary>
+            /// <param name="key">The key to add or update.</param>
+            /// <param name="addValue">The value to add if the key does not exist.</param>
+            /// <param name="updateValueFactory">A function that produces the new value given the key and existing value.</param>
+            /// <returns>The value that is now stored for the key.</returns>
+            /// <exception cref="ArgumentNullException">Thrown if the source, <paramref name="key"/>, or <paramref name="updateValueFactory"/> is null.</exception>
+            public TValue AddOrUpdate(TKey key, TValue addValue, Func<TKey, TValue, TValue> updateValueFactory)
+            {
+                ArgumentNullException.ThrowIfNull(source);
+                ArgumentNullException.ThrowIfNull(key);
+                ArgumentNullException.ThrowIfNull(updateValueFactory);
+
+                if (source.TryGetValue(key, out TValue? existing))
+                {
+                    TValue updated = updateValueFactory(key, existing);
+                    source[key] = updated;
+                    return updated;
+                }
+
+                source[key] = addValue;
+                return addValue;
+            }
+
+            /// <summary>
+            /// Removes all entries from the dictionary that match the specified predicate.
+            /// </summary>
+            /// <param name="predicate">The condition evaluated for each key-value pair.</param>
+            /// <returns>The number of entries removed.</returns>
+            /// <exception cref="ArgumentNullException">Thrown if the source or <paramref name="predicate"/> is null.</exception>
+            public int RemoveWhere(Func<KeyValuePair<TKey, TValue>, bool> predicate)
+            {
+                ArgumentNullException.ThrowIfNull(source);
+                ArgumentNullException.ThrowIfNull(predicate);
+
+                List<TKey> keysToRemove = [.. source.Where(predicate).Select(kv => kv.Key)];
+                foreach (TKey key in keysToRemove)
+                    source.Remove(key);
+                return keysToRemove.Count;
+            }
         }
 
         extension<TKey, TValue>(IDictionary<TKey, TValue?> source)

@@ -146,6 +146,31 @@
                     throw;
                 }
             }
+
+            /// <summary>
+            /// Awaits the task while observing the specified cancellation token. If the token
+            /// is signalled before the task completes, <see cref="OperationCanceledException"/> is thrown.
+            /// The underlying task continues running; its exceptions are not observed here.
+            /// </summary>
+            /// <param name="cancellationToken">The cancellation token.</param>
+            /// <returns>The result of the task.</returns>
+            public async Task<T> WithCancellationAsync(CancellationToken cancellationToken)
+            {
+                ArgumentNullException.ThrowIfNull(task);
+
+                if (!cancellationToken.CanBeCanceled)
+                    return await task.ConfigureAwait(false);
+
+                var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                using (cancellationToken.Register(static s => ((TaskCompletionSource<bool>)s!).TrySetResult(true), tcs))
+                {
+                    Task completed = await Task.WhenAny(task, tcs.Task).ConfigureAwait(false);
+                    if (completed == tcs.Task)
+                        throw new OperationCanceledException(cancellationToken);
+                }
+
+                return await task.ConfigureAwait(false);
+            }
         }
 
         extension(Task task)
@@ -212,6 +237,31 @@
                             onError?.Invoke(ex);
                     },
                     TaskContinuationOptions.OnlyOnFaulted);
+            }
+
+            /// <summary>
+            /// Awaits the task while observing the specified cancellation token. If the token
+            /// is signalled before the task completes, <see cref="OperationCanceledException"/> is thrown.
+            /// </summary>
+            /// <param name="cancellationToken">The cancellation token.</param>
+            public async Task WithCancellationAsync(CancellationToken cancellationToken)
+            {
+                ArgumentNullException.ThrowIfNull(task);
+
+                if (!cancellationToken.CanBeCanceled)
+                {
+                    await task.ConfigureAwait(false);
+                    return;
+                }
+
+                var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                using (cancellationToken.Register(static s => ((TaskCompletionSource<bool>)s!).TrySetResult(true), tcs))
+                {
+                    Task completed = await Task.WhenAny(task, tcs.Task).ConfigureAwait(false);
+                    if (completed == tcs.Task)
+                        throw new OperationCanceledException(cancellationToken);
+                }
+                await task.ConfigureAwait(false);
             }
         }
     }

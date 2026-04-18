@@ -34,6 +34,75 @@ namespace Grondo.Tests.Extensions
 
             result.Should().Contain(s => s.StartsWith("Segment"));
         }
+
+        [TestMethod]
+        public void AppendPath_AddsSegment_WithoutDoubleSlash()
+        {
+            var uri = new Uri("https://example.com/api/");
+            uri.AppendPath("/users").AbsoluteUri.Should().Be("https://example.com/api/users");
+        }
+
+        [TestMethod]
+        public void AppendPath_NoSlashes_InsertsSlash()
+        {
+            var uri = new Uri("https://example.com/api");
+            uri.AppendPath("users").AbsoluteUri.Should().Be("https://example.com/api/users");
+        }
+
+        [TestMethod]
+        public void AppendPath_PreservesQuery()
+        {
+            var uri = new Uri("https://example.com/api?x=1");
+            uri.AppendPath("users").AbsoluteUri.Should().Contain("?x=1");
+        }
+
+        [TestMethod]
+        public void GetQueryParameters_ParsesQueryString()
+        {
+            var uri = new Uri("https://example.com?a=1&b=two&c=");
+            IReadOnlyDictionary<string, string> result = uri.GetQueryParameters();
+            result["a"].Should().Be("1");
+            result["b"].Should().Be("two");
+            result["c"].Should().Be(string.Empty);
+        }
+
+        [TestMethod]
+        public void GetQueryParameters_NoQuery_ReturnsEmpty()
+        {
+            var uri = new Uri("https://example.com/api");
+            uri.GetQueryParameters().Should().BeEmpty();
+        }
+
+        [TestMethod]
+        public void GetQueryParameters_DecodesValues()
+        {
+            var uri = new Uri("https://example.com?name=John%20Doe");
+            uri.GetQueryParameters()["name"].Should().Be("John Doe");
+        }
+
+        [TestMethod]
+        public void WithQueryParameter_AddsNewParameter()
+        {
+            var uri = new Uri("https://example.com/api");
+            Uri result = uri.WithQueryParameter("x", "1");
+            result.Query.Should().Contain("x=1");
+        }
+
+        [TestMethod]
+        public void WithQueryParameter_ReplacesExistingParameter()
+        {
+            var uri = new Uri("https://example.com/api?x=1");
+            Uri result = uri.WithQueryParameter("x", "2");
+            result.GetQueryParameters()["x"].Should().Be("2");
+        }
+
+        [TestMethod]
+        public void WithQueryParameter_EncodesValues()
+        {
+            var uri = new Uri("https://example.com");
+            Uri result = uri.WithQueryParameter("name", "John Doe");
+            result.Query.Should().Contain("name=John%20Doe");
+        }
     }
 }
 

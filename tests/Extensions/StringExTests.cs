@@ -246,5 +246,77 @@ namespace Grondo.Tests.Extensions
         [DataRow("12345", "54321")]
         public void Reverse_ReversesCorrectly(string input, string expected) =>
             input.Reverse().Should().Be(expected);
+
+        [TestMethod]
+        [DataRow("my_property_name", "MyPropertyName")]
+        [DataRow("my-property-name", "MyPropertyName")]
+        [DataRow("myPropertyName", "MyPropertyName")]
+        [DataRow("MyPropertyName", "MyPropertyName")]
+        [DataRow("", "")]
+        public void ToPascalCase_ConvertsCorrectly(string input, string expected) =>
+            input.ToPascalCase().Should().Be(expected);
+
+        [TestMethod]
+        public void ToTitleCase_CapitalizesEachWord() =>
+            "hello world from grondo".ToTitleCase().Should().Be("Hello World From Grondo");
+
+        [TestMethod]
+        [DataRow("<p>Hello <b>world</b></p>", "Hello world")]
+        [DataRow("no tags here", "no tags here")]
+        [DataRow("", "")]
+        public void StripHtml_RemovesTags(string input, string expected) =>
+            input.StripHtml().Should().Be(expected);
+
+        [TestMethod]
+        [DataRow("one two three", 3)]
+        [DataRow("  one   two  ", 2)]
+        [DataRow("", 0)]
+        [DataRow("   ", 0)]
+        [DataRow("single", 1)]
+        public void WordCount_ReturnsCount(string input, int expected) =>
+            input.WordCount().Should().Be(expected);
+
+        [TestMethod]
+        [DataRow("café", "cafe")]
+        [DataRow("naïve", "naive")]
+        [DataRow("résumé", "resume")]
+        [DataRow("hello", "hello")]
+        public void RemoveDiacritics_RemovesAccents(string input, string expected) =>
+            input.RemoveDiacritics().Should().Be(expected);
+
+        [TestMethod]
+        public void Repeat_RepeatsString() =>
+            "ab".Repeat(3).Should().Be("ababab");
+
+        [TestMethod]
+        public void Repeat_Zero_ReturnsEmpty() =>
+            "ab".Repeat(0).Should().Be(string.Empty);
+
+        [TestMethod]
+        public void Repeat_Negative_Throws() =>
+            FluentActions.Invoking(() => "ab".Repeat(-1)).Should().Throw<ArgumentOutOfRangeException>();
+
+        [TestMethod]
+        public void EnsureStartsWith_AddsPrefix_WhenMissing() =>
+            "world".EnsureStartsWith("hello-").Should().Be("hello-world");
+
+        [TestMethod]
+        public void EnsureStartsWith_ReturnsAsIs_WhenAlreadyPresent() =>
+            "hello-world".EnsureStartsWith("hello-").Should().Be("hello-world");
+
+        [TestMethod]
+        public void EnsureEndsWith_AddsSuffix_WhenMissing() =>
+            "file".EnsureEndsWith(".txt").Should().Be("file.txt");
+
+        [TestMethod]
+        public void EnsureEndsWith_ReturnsAsIs_WhenAlreadyPresent() =>
+            "file.txt".EnsureEndsWith(".txt").Should().Be("file.txt");
+
+        [TestMethod]
+        public void ReplaceMultiple_AppliesAllReplacements()
+        {
+            var replacements = new Dictionary<string, string> { ["foo"] = "bar", ["baz"] = "qux" };
+            "foo and baz".ReplaceMultiple(replacements).Should().Be("bar and qux");
+        }
     }
 }

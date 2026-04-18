@@ -107,6 +107,108 @@ namespace Grondo.Extensions
             /// <returns>A relative time string.</returns>
             public string ToRelativeTime() =>
                 TimeSpanEx.FormatRelativeTime(DateTime.UtcNow - date.ToUniversalTime());
+
+            /// <summary>
+            /// Returns the start of the week containing the specified date, preserving its <see cref="DateTime.Kind"/>.
+            /// </summary>
+            /// <param name="firstDayOfWeek">The day considered the first day of the week. Defaults to <see cref="DayOfWeek.Monday"/>.</param>
+            /// <returns>A new <see cref="DateTime"/> at the start of the week.</returns>
+            public DateTime StartOfWeek(DayOfWeek firstDayOfWeek = DayOfWeek.Monday)
+            {
+                int diff = (7 + (date.DayOfWeek - firstDayOfWeek)) % 7;
+                return date.Date.AddDays(-diff);
+            }
+
+            /// <summary>
+            /// Returns the end of the week containing the specified date (last tick of the last day).
+            /// </summary>
+            /// <param name="firstDayOfWeek">The day considered the first day of the week. Defaults to <see cref="DayOfWeek.Monday"/>.</param>
+            /// <returns>A new <see cref="DateTime"/> at the last tick of the week.</returns>
+            public DateTime EndOfWeek(DayOfWeek firstDayOfWeek = DayOfWeek.Monday) =>
+                date.StartOfWeek(firstDayOfWeek).AddDays(7).AddTicks(-1);
+
+            /// <summary>
+            /// Returns a new <see cref="DateTime"/> representing the first day of the year.
+            /// </summary>
+            /// <returns>A new <see cref="DateTime"/> at the start of the first day of the year.</returns>
+            public DateTime StartOfYear() =>
+                new(date.Year, 1, 1, 0, 0, 0, date.Kind);
+
+            /// <summary>
+            /// Returns a new <see cref="DateTime"/> representing the end of the last day of the year.
+            /// </summary>
+            /// <returns>A new <see cref="DateTime"/> at the last tick of the year.</returns>
+            public DateTime EndOfYear() =>
+                new DateTime(date.Year, 1, 1, 0, 0, 0, date.Kind).AddYears(1).AddTicks(-1);
+
+            /// <summary>
+            /// Calculates the age in whole years from the specified date to the current UTC date.
+            /// </summary>
+            /// <returns>The age in whole years.</returns>
+            public int Age() =>
+                date.AgeAt(DateTime.UtcNow);
+
+            /// <summary>
+            /// Calculates the age in whole years from the specified date to a reference date.
+            /// </summary>
+            /// <param name="asOf">The reference date.</param>
+            /// <returns>The age in whole years.</returns>
+            public int AgeAt(DateTime asOf)
+            {
+                int years = asOf.Year - date.Year;
+                if (asOf.Month < date.Month || (asOf.Month == date.Month && asOf.Day < date.Day))
+                    years--;
+                return years;
+            }
+
+            /// <summary>
+            /// Converts the specified <see cref="DateTime"/> to a Unix timestamp in seconds.
+            /// </summary>
+            /// <returns>Seconds elapsed since the Unix epoch (1970-01-01 UTC).</returns>
+            public long ToUnixTimeSeconds() =>
+                new DateTimeOffset(date.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(date, DateTimeKind.Utc) : date.ToUniversalTime()).ToUnixTimeSeconds();
+
+            /// <summary>
+            /// Converts the specified <see cref="DateTime"/> to a Unix timestamp in milliseconds.
+            /// </summary>
+            /// <returns>Milliseconds elapsed since the Unix epoch (1970-01-01 UTC).</returns>
+            public long ToUnixTimeMilliseconds() =>
+                new DateTimeOffset(date.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(date, DateTimeKind.Utc) : date.ToUniversalTime()).ToUnixTimeMilliseconds();
+
+            /// <summary>
+            /// Determines whether the specified <see cref="DateTime"/> falls on the current UTC day.
+            /// </summary>
+            /// <returns><c>true</c> if the date is today (UTC); otherwise, <c>false</c>.</returns>
+            public bool IsToday() =>
+                date.ToUniversalTime().Date == DateTime.UtcNow.Date;
+
+            /// <summary>
+            /// Determines whether the specified <see cref="DateTime"/> is strictly before the current UTC time.
+            /// </summary>
+            /// <returns><c>true</c> if the date is in the past; otherwise, <c>false</c>.</returns>
+            public bool IsInPast() =>
+                date.ToUniversalTime() < DateTime.UtcNow;
+
+            /// <summary>
+            /// Determines whether the specified <see cref="DateTime"/> is strictly after the current UTC time.
+            /// </summary>
+            /// <returns><c>true</c> if the date is in the future; otherwise, <c>false</c>.</returns>
+            public bool IsInFuture() =>
+                date.ToUniversalTime() > DateTime.UtcNow;
+
+            /// <summary>
+            /// Returns the number of whole days from the current UTC date to the specified date.
+            /// </summary>
+            /// <returns>The number of days until the date (negative if in the past).</returns>
+            public int DaysUntil() =>
+                (int)(date.ToUniversalTime().Date - DateTime.UtcNow.Date).TotalDays;
+
+            /// <summary>
+            /// Determines whether the specified date falls in a leap year.
+            /// </summary>
+            /// <returns><c>true</c> if the date's year is a leap year; otherwise, <c>false</c>.</returns>
+            public bool IsLeapYear() =>
+                DateTime.IsLeapYear(date.Year);
         }
 
         extension(DateTime? date)
