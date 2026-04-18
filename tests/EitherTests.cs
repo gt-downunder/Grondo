@@ -148,8 +148,8 @@ namespace Grondo.Tests
         public void SelectMany_Right_ComposesQueries()
         {
             Either<string, int> r = from a in Either<string, int>.FromRight(2)
-                    from b in Either<string, int>.FromRight(3)
-                    select a + b;
+                                    from b in Either<string, int>.FromRight(3)
+                                    select a + b;
             r.IsRight.Should().BeTrue();
             r.Right.Should().Be(5);
         }
@@ -158,8 +158,8 @@ namespace Grondo.Tests
         public void SelectMany_LeftShortCircuits()
         {
             Either<string, int> r = from a in Either<string, int>.FromLeft("e")
-                    from b in Either<string, int>.FromRight(3)
-                    select a + b;
+                                    from b in Either<string, int>.FromRight(3)
+                                    select a + b;
             r.IsLeft.Should().BeTrue();
             r.Left.Should().Be("e");
         }

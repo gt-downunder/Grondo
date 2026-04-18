@@ -53,6 +53,6 @@ namespace Grondo.Tests.Extensions
             linked.Token.IsCancellationRequested.Should().BeTrue();
         }
 
-        public TestContext TestContext { get; set; }
+        public TestContext? TestContext { get; set; }
     }
 }

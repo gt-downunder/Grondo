@@ -42,8 +42,8 @@ namespace Grondo.Tests
         public void SelectMany_EnablesLinqQueries()
         {
             Result<int, Error> r = from a in Result<int, Error>.Success(2)
-                    from b in Result<int, Error>.Success(3)
-                    select a + b;
+                                   from b in Result<int, Error>.Success(3)
+                                   select a + b;
             r.Value.Should().Be(5);
         }
 
@@ -52,8 +52,8 @@ namespace Grondo.Tests
         {
             var err = Error.Validation("bad");
             Result<int, Error> r = from a in Result<int, Error>.Failure(err)
-                    from b in Result<int, Error>.Success(3)
-                    select a + b;
+                                   from b in Result<int, Error>.Success(3)
+                                   select a + b;
             r.Error.Should().Be(err);
         }
 
