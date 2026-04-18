@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Text.Json;
+using Grondo.Extensions;
 using Grondo.Utilities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -43,17 +44,18 @@ namespace Grondo.Exceptions
             catch (ExceptionBase ex)
             {
                 LogDomainException(logger, ex, ex.MessageHeader);
-                await WriteAsync(context, ex.ToProblemDetails(context.Request.Path)).ConfigureAwait(false);
+                await WriteAsync(context, ex.ToProblemDetails(context.Request.Path, _options.ProblemTypeUriFormatter)).ConfigureAwait(false);
             }
             catch (Exception ex) when (_options.HandleUnexpectedExceptions)
             {
                 LogUnhandledException(logger, ex);
+                int statusCode = (int)HttpStatusCode.InternalServerError;
                 var details = new ProblemDetails
                 {
-                    Status = (int)HttpStatusCode.InternalServerError,
+                    Status = statusCode,
                     Title = "Internal Server Error",
                     Detail = _options.IncludeUnexpectedExceptionDetails ? ex.Message : "An unexpected error occurred.",
-                    Type = "https://httpstatuses.io/500",
+                    Type = _options.ProblemTypeUriFormatter(statusCode),
                     Instance = context.Request.Path,
                 };
                 await WriteAsync(context, details).ConfigureAwait(false);
@@ -94,6 +96,15 @@ namespace Grondo.Exceptions
         /// Custom JSON serializer options for the response body. If <c>null</c>, <see cref="JsonDefaults.Web"/> is used.
         /// </summary>
         public JsonSerializerOptions? JsonSerializerOptions { get; set; }
+
+        /// <summary>
+        /// Formatter producing the RFC 7807 <c>type</c> URI for a given HTTP status code.
+        /// Defaults to <see cref="ExceptionBaseEx.DefaultProblemTypeUriFormatter"/>, which
+        /// points to MDN documentation (e.g. <c>https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404</c>).
+        /// Override to produce application-specific documentation URIs.
+        /// </summary>
+        public Func<int, string> ProblemTypeUriFormatter { get; set; } =
+            ExceptionBaseEx.DefaultProblemTypeUriFormatter;
     }
 
     /// <summary>

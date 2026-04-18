@@ -9,9 +9,9 @@ A C# 14 / .NET 10 library providing functional programming types, extension meth
 
 .NET lacks built-in functional types like `Result<T>` or `Maybe<T>`, and common operations on strings, collections, dates, and tasks often require repetitive boilerplate. Grondo fills these gaps with a single, cohesive package:
 
-- **Functional types** — `Result<T>`, `Maybe<T>`, `Either<L,R>`, and `Validation<T>` with LINQ query syntax, full interop between types, and async support
-- **30 extension method classes** — Strings, collections, dates, JSON, HTTP, tasks, guard clauses, async LINQ, memoization, and more
-- **13 HTTP-mapped exceptions** — Domain exceptions with status codes and message headers, ready for API error handling
+- **Functional types** — `Result<T>`, `Result<T, TError>`, `Maybe<T>`, `Either<L,R>`, `Validation<T>`, and `OneOf<T1..T4>` with LINQ query syntax, full interop between types, and async support
+- **32 extension method classes** — Strings, collections, dates, JSON, HTTP, tasks, guard clauses, async LINQ, memoization, and more
+- **14 HTTP-mapped exceptions** — Domain exceptions with status codes and message headers, ready for API error handling
 
 ## Installation
 
@@ -24,10 +24,10 @@ dotnet add package Grondo
 ## Quick Start
 
 ```csharp
-using Grondo;                // Result<T>, Maybe<T>, Either<L,R>, Validation<T>
-using Grondo.Extensions;     // All extension methods
-using Grondo.Exceptions;     // Domain exceptions
-using Grondo.Utilities;      // Environments, StringFactory
+using Grondo;                // Result<T>, Result<T,TError>, Maybe<T>, Either<L,R>, Validation<T>, OneOf<T1..T4>, Error, Combinators
+using Grondo.Extensions;     // All extension methods (including ToProblemDetails on ExceptionBase)
+using Grondo.Exceptions;     // Domain exceptions + exception-handling middleware
+using Grondo.Utilities;      // Environments, StringFactory, JsonDefaults
 ```
 
 ### Railway-Oriented Pipelines
@@ -114,15 +114,15 @@ Grondo uses an automated release process with GitHub Actions. See [.github/RELEA
 
 ```bash
 # Update CHANGELOG.md first, then:
-./RELEASE.sh <version>    # e.g. ./RELEASE.sh 1.2.0
+./RELEASE.sh <version>    # e.g. ./RELEASE.sh 2.0.0
 ```
 
 ## Documentation
 
 > 📖 **[gt-downunder.github.io/Grondo](https://gt-downunder.github.io/Grondo/)** — Full API reference with practical code examples for every public method.
 
-- **[Extension Methods](https://gt-downunder.github.io/Grondo/extensions)** — All 30 extension method classes with examples
-- **[Types](https://gt-downunder.github.io/Grondo/types)** — `Result<T>`, `Maybe<T>`, `Either<L,R>`, `Validation<T>`, LINQ syntax
+- **[Extension Methods](https://gt-downunder.github.io/Grondo/extensions)** — All 32 extension method classes with examples
+- **[Types](https://gt-downunder.github.io/Grondo/types)** — `Result<T>`, `Result<T, TError>`, `Maybe<T>`, `Either<L,R>`, `Validation<T>`, `OneOf<T1..T4>`, LINQ syntax
 - **[Custom Exceptions](https://gt-downunder.github.io/Grondo/exceptions)** — HTTP-mapped domain exceptions
 - **[Utilities](https://gt-downunder.github.io/Grondo/utilities)** — `Environments`, `StringFactory`, `JsonDefaults`
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** — Guidelines for contributing

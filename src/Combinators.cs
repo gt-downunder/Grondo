@@ -4,7 +4,7 @@
     /// Static combinators for working with collections of functional types.
     /// Provides Sequence (turn a collection of containers inside-out) and Traverse
     /// (map-then-sequence) operations across <see cref="Result{T}"/>, <see cref="Maybe{T}"/>,
-    /// and <see cref="Either{TLeft, TRight}"/>.
+    /// <see cref="Validation{T}"/>, and <see cref="Result{T, TError}"/>.
     /// </summary>
     public static class Combinators
     {
@@ -34,7 +34,7 @@
             ArgumentNullException.ThrowIfNull(source);
             ArgumentNullException.ThrowIfNull(selector);
             var values = new List<TResult>();
-            foreach (T? item in source)
+            foreach (T item in source)
             {
                 Result<TResult> r = selector(item);
                 if (r.IsFailure) return Result<IReadOnlyList<TResult>>.Failure(r.Error);
@@ -69,7 +69,7 @@
             ArgumentNullException.ThrowIfNull(source);
             ArgumentNullException.ThrowIfNull(selector);
             var values = new List<TResult>();
-            foreach (T? item in source)
+            foreach (T item in source)
             {
                 Maybe<TResult> m = selector(item);
                 if (m.HasNoValue) return Maybe<IReadOnlyList<TResult>>.None;
@@ -108,7 +108,7 @@
             ArgumentNullException.ThrowIfNull(selector);
             var values = new List<TResult>();
             var errors = new List<string>();
-            foreach (T? item in source)
+            foreach (T item in source)
             {
                 Validation<TResult> v = selector(item);
                 if (v.IsValid) values.Add(v.Value);

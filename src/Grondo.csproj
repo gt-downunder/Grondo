@@ -9,14 +9,14 @@
         <!-- Version is automatically calculated from Git tags -->
         <!-- Tag format: v1.2.3 -->
         <MinVerTagPrefix>v</MinVerTagPrefix>
-        <MinVerMinimumMajorMinor>1.0</MinVerMinimumMajorMinor>
+        <MinVerMinimumMajorMinor>2.0</MinVerMinimumMajorMinor>
         <MinVerDefaultPreReleaseIdentifiers>preview</MinVerDefaultPreReleaseIdentifiers>
         <MinVerVerbosity>normal</MinVerVerbosity>
 
         <!-- NuGet package metadata -->
         <PackageId>Grondo</PackageId>
         <Title>Grondo</Title>
-        <Description>C# 14 / .NET 10 functional programming library with Result&lt;T&gt;, Result&lt;T,TError&gt;, Maybe&lt;T&gt;, Either&lt;L,R&gt;, Validation&lt;T&gt;, OneOf&lt;T1..T4&gt; discriminated unions, LINQ query syntax support, and 30+ extension method classes</Description>
+        <Description>C# 14 / .NET 10 functional programming library with Result&lt;T&gt;, Result&lt;T,TError&gt;, Maybe&lt;T&gt;, Either&lt;L,R&gt;, Validation&lt;T&gt;, OneOf&lt;T1..T4&gt; discriminated unions, LINQ query syntax support, and 32+ extension method classes</Description>
         <PackageTags>csharp dotnet extensions utilities exceptions functional-programming result maybe either validation oneof discriminated-union linq railway-oriented-programming</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageProjectUrl>https://github.com/gt-downunder/Grondo</PackageProjectUrl>

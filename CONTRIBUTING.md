@@ -36,15 +36,17 @@ Thank you for your interest in contributing! This guide covers everything you ne
 Grondo.sln
 ├── src/                        # Main library (Grondo)
 │   ├── Extensions/             # Extension method classes (C# 14 extension blocks)
-│   ├── Exceptions/             # HTTP-mapped custom exception types
+│   ├── Exceptions/             # HTTP-mapped custom exception types, ProblemDetails middleware
 │   ├── Utilities/              # JsonDefaults, StringFactory, Environments
 │   ├── Result.cs               # Result<T> and Result readonly structs
-│   └── Maybe.cs                # Maybe<T> optional readonly struct
-├── tests/                      # MSTest unit tests
-│   ├── Extensions/             # One test class per extension class
-│   ├── Exceptions/             # Exception tests
-│   ├── ResultTests.cs          # Result<T>/Result tests
-│   └── MaybeTests.cs           # Maybe<T> tests
+│   ├── ResultTE.cs             # Result<T, TError> typed-error variant
+│   ├── Maybe.cs                # Maybe<T> optional readonly struct
+│   ├── Either.cs               # Either<TLeft, TRight> readonly struct
+│   ├── Validation.cs           # Validation<T> accumulative errors
+│   ├── Error.cs                # Error record for Result<T, TError>
+│   ├── Combinators.cs          # Sequence / Traverse for all container types
+│   └── OneOf2.cs / OneOf3.cs / OneOf4.cs  # Discriminated unions (2–4 arities)
+├── tests/                      # MSTest unit tests (mirrors src/ layout)
 └── benchmarks/                 # BenchmarkDotNet performance benchmarks
 ```
 

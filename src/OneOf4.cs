@@ -11,7 +11,7 @@ namespace Grondo
     /// <typeparam name="T2">The second possible type.</typeparam>
     /// <typeparam name="T3">The third possible type.</typeparam>
     /// <typeparam name="T4">The fourth possible type.</typeparam>
-    [DebuggerDisplay("T{_index}({Value})")]
+    [DebuggerDisplay("T{Index}({Value})")]
     public readonly struct OneOf<T1, T2, T3, T4> : IEquatable<OneOf<T1, T2, T3, T4>>
     {
         private readonly T1? _value1;

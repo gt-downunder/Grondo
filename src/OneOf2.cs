@@ -15,7 +15,7 @@ namespace Grondo
     /// conversions are ambiguous at call sites; use the explicit <c>FromT0</c>/<c>FromT1</c>
     /// factories in that case.
     /// </remarks>
-    [DebuggerDisplay("T{_index}({Value})")]
+    [DebuggerDisplay("T{Index}({Value})")]
     public readonly struct OneOf<T1, T2> : IEquatable<OneOf<T1, T2>>
     {
         private readonly T1? _value1;

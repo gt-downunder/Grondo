@@ -78,5 +78,37 @@ namespace Grondo.Tests.Exceptions
                     new ExceptionHandlingOptions { HandleUnexpectedExceptions = false }))
                 .Should().ThrowAsync<InvalidOperationException>();
         }
+
+        [TestMethod]
+        public async Task ExceptionBase_UsesDefaultMdnTypeUri()
+        {
+            (_, _, string body) = await RunAsync(_ => throw new EntityNotFoundException("missing"));
+
+            using var doc = JsonDocument.Parse(body);
+            doc.RootElement.GetProperty("type").GetString()
+                .Should().Be("https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404");
+        }
+
+        [TestMethod]
+        public async Task ProblemTypeUriFormatter_Override_IsUsed_ForDomainAndUnhandled()
+        {
+            var options = new ExceptionHandlingOptions
+            {
+                HandleUnexpectedExceptions = true,
+                ProblemTypeUriFormatter = code => $"https://example.com/errors/{code}",
+            };
+
+            (_, _, string domainBody) = await RunAsync(_ => throw new BadRequestException("bad"), options);
+            using (var doc = JsonDocument.Parse(domainBody))
+            {
+                doc.RootElement.GetProperty("type").GetString().Should().Be("https://example.com/errors/400");
+            }
+
+            (_, _, string unhandledBody) = await RunAsync(_ => throw new InvalidOperationException("boom"), options);
+            using (var doc = JsonDocument.Parse(unhandledBody))
+            {
+                doc.RootElement.GetProperty("type").GetString().Should().Be("https://example.com/errors/500");
+            }
+        }
     }
 }

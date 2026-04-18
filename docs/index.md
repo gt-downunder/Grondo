@@ -27,10 +27,10 @@ dotnet add package Grondo
 ### Using Directives
 
 ```csharp
-using Grondo;                // Result<T>, Result, Maybe<T>, Either<L,R>, Validation<T>
-using Grondo.Extensions;     // All extension methods
-using Grondo.Exceptions;     // ExceptionBase, ErrorResponse, and all domain exceptions
-using Grondo.Utilities;      // Environments, StringFactory
+using Grondo;                // Result<T>, Result<T,TError>, Result, Maybe<T>, Either<L,R>, Validation<T>, OneOf<T1..T4>, Error, Combinators
+using Grondo.Extensions;     // All extension methods (including ToProblemDetails on ExceptionBase)
+using Grondo.Exceptions;     // ExceptionBase, ErrorResponse, exception-handling middleware, and all domain exceptions
+using Grondo.Utilities;      // Environments, StringFactory, JsonDefaults
 ```
 
 ### ASP.NET Core Shared Framework
@@ -52,11 +52,11 @@ This makes Grondo primarily suitable for **ASP.NET Core applications** (web APIs
 
 ### [Extension Methods]({{ site.baseurl }}{% link extensions.md %})
 
-30 extension method classes covering strings, collections, dates, JSON, HTTP, tasks, guards, async LINQ, memoization, and more.
+32 extension method classes covering strings, collections, dates, JSON, HTTP, tasks, guards, async LINQ, memoization, and more.
 
 ### [Custom Exceptions]({{ site.baseurl }}{% link exceptions.md %})
 
-13 HTTP-aware domain exceptions with status codes and message headers, including ValidationException with field-level errors.
+14 HTTP-aware domain exceptions with status codes and message headers, including ValidationException with field-level errors.
 
 ### [Utilities]({{ site.baseurl }}{% link utilities.md %})
 
@@ -64,5 +64,5 @@ Environment name constants and unique string generation.
 
 ### [Types]({{ site.baseurl }}{% link types.md %})
 
-`Result<T>`, `Result`, `Maybe<T>`, `Either<L,R>`, and `Validation<T>` — comprehensive functional programming types with LINQ query syntax support.
+`Result<T>`, `Result<T, TError>`, `Result`, `Maybe<T>`, `Either<L,R>`, `Validation<T>`, and `OneOf<T1..T4>` — comprehensive functional programming types with LINQ query syntax support.
 

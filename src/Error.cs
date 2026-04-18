@@ -12,24 +12,39 @@ namespace Grondo
     public record Error(string Code, string Message)
     {
         /// <summary>A generic "not found" error.</summary>
-        public static Error NotFound(string message = "The requested resource was not found.") =>
-            new("not_found", message);
+        public static Error NotFound(string message = "The requested resource was not found.")
+        {
+            ArgumentNullException.ThrowIfNull(message);
+            return new Error("not_found", message);
+        }
 
         /// <summary>A generic "validation failed" error.</summary>
-        public static Error Validation(string message) =>
-            new("validation", message);
+        public static Error Validation(string message)
+        {
+            ArgumentNullException.ThrowIfNull(message);
+            return new Error("validation", message);
+        }
 
         /// <summary>A generic "unauthorized" error.</summary>
-        public static Error Unauthorized(string message = "Authentication is required.") =>
-            new("unauthorized", message);
+        public static Error Unauthorized(string message = "Authentication is required.")
+        {
+            ArgumentNullException.ThrowIfNull(message);
+            return new Error("unauthorized", message);
+        }
 
         /// <summary>A generic "forbidden" error.</summary>
-        public static Error Forbidden(string message = "Access is denied.") =>
-            new("forbidden", message);
+        public static Error Forbidden(string message = "Access is denied.")
+        {
+            ArgumentNullException.ThrowIfNull(message);
+            return new Error("forbidden", message);
+        }
 
         /// <summary>A generic "conflict" error.</summary>
-        public static Error Conflict(string message) =>
-            new("conflict", message);
+        public static Error Conflict(string message)
+        {
+            ArgumentNullException.ThrowIfNull(message);
+            return new Error("conflict", message);
+        }
 
         /// <summary>A generic "unexpected" error wrapping an exception.</summary>
         /// <param name="exception">The exception to wrap.</param>
@@ -40,8 +55,11 @@ namespace Grondo
         }
 
         /// <summary>A generic "unexpected" error with a custom message.</summary>
-        public static Error Unexpected(string message) =>
-            new("unexpected", message);
+        public static Error Unexpected(string message)
+        {
+            ArgumentNullException.ThrowIfNull(message);
+            return new Error("unexpected", message);
+        }
 
         /// <summary>Returns the error formatted as "Code: Message".</summary>
         public override string ToString() => $"{Code}: {Message}";

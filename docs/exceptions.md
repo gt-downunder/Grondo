@@ -99,17 +99,29 @@ var error = new ErrorResponse
 
 For field-level validation errors with detailed error messages per field.
 
+`ValidationException.Errors` is exposed as an immutable
+`IReadOnlyDictionary<string, IReadOnlyList<string>>` — both the dictionary and the inner lists are
+read-only, and the supplied errors are defensively copied by the constructor.
+
 ```csharp
 // Single field error
 throw new ValidationException("Email", "Email is required");
 
-// Multiple field errors
+// Multiple field errors (the dictionary is copied; callers may safely mutate their own copy)
 throw new ValidationException(new Dictionary<string, string[]>
 {
     ["Email"] = new[] { "Email is required", "Email must be valid" },
     ["Age"] = new[] { "Age must be 18 or older" },
     ["Name"] = new[] { "Name is required" }
 });
+
+// Read-only shape (preferred for new code)
+IReadOnlyDictionary<string, IReadOnlyList<string>> errors = new Dictionary<string, IReadOnlyList<string>>
+{
+    ["Email"] = new[] { "Email is required" },
+    ["Age"]   = new[] { "Age must be 18 or older" },
+};
+throw new ValidationException(errors);
 
 // In controller
 try
@@ -227,7 +239,12 @@ ASP.NET Core middleware does this automatically.
 
 ### Manual conversion
 
+The `ToProblemDetails` extension lives in `Grondo.Extensions` (alongside the other `*Ex`
+classes), so make sure that namespace is imported:
+
 ```csharp
+using Grondo.Extensions;
+
 catch (EntityNotFoundException ex)
 {
     ProblemDetails details = ex.ToProblemDetails(instance: HttpContext.Request.Path);
@@ -252,9 +269,13 @@ app.UseGrondoExceptionHandling(new ExceptionHandlingOptions
 {
     HandleUnexpectedExceptions = true,         // catch non-ExceptionBase too
     IncludeUnexpectedExceptionDetails = false, // redact messages from unknown exceptions
+    // Override the RFC 7807 `type` URI (defaults to MDN documentation, e.g.
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404):
+    ProblemTypeUriFormatter = code => $"https://docs.example.com/api/errors/{code}",
 });
 ```
 
 Any `ExceptionBase` thrown during request handling is converted to `application/problem+json`
 with the correct status code, title, and detail. Unhandled exceptions (if enabled) surface as
-a generic 500 response.
+a generic 500 response. The `type` URI defaults to the MDN documentation page for the status
+code; override `ProblemTypeUriFormatter` to point at application-specific documentation.

@@ -5,7 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.0] - Unreleased
+
+### Breaking Changes
+
+- **`ValidationException.Errors`** type changed from `IDictionary<string, string[]>` to
+  `IReadOnlyDictionary<string, IReadOnlyList<string>>`. The dictionary and inner lists are now
+  deeply immutable and the supplied errors are defensively copied by the constructor. A new
+  constructor overload accepting `IReadOnlyDictionary<string, IReadOnlyList<string>>` is available
+  for consumers that already work with read-only collections; the existing
+  `IDictionary<string, string[]>` constructor continues to work but copies its input.
+- **`ExceptionBaseEx`** (with the `ToProblemDetails` extension on `ExceptionBase`) moved from the
+  `Grondo.Exceptions` namespace/folder to `Grondo.Extensions`, matching all other `*Ex`
+  extension classes. Consumers that use `using Grondo.Extensions;` (already typical) need no
+  change; consumers that imported only `Grondo.Exceptions` must add `using Grondo.Extensions;`.
 
 ### Added
 
@@ -46,7 +59,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ExceptionBase.ToProblemDetails()` — converts any `ExceptionBase` (including
   `ValidationException`) to an RFC 7807 `ProblemDetails` response.
 - `ExceptionHandlingMiddleware` with `UseGrondoExceptionHandling()` extension for automatic
-  conversion of exceptions to `application/problem+json` responses.
+  conversion of exceptions to `application/problem+json` responses. Supports a configurable
+  `ProblemTypeUriFormatter` on `ExceptionHandlingOptions`.
 
 #### Utilities
 - `JsonDefaults` is now `public` and adds presets: `CamelCase`, `SnakeCase`, `NoNulls`, `Web`.
@@ -60,7 +74,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Property-based tests for monad laws (`Maybe`, `Result`, `Either`) via FsCheck 3.
 
 ### Changed
-- Fixed `DebuggerDisplay` expression syntax in `Maybe<T>`, `Result<T>`, and `Result`.
+- Fixed `DebuggerDisplay` expression syntax in `Maybe<T>`, `Result<T>`, `Result`, and
+  `OneOf<T1, T2>` / `OneOf<T1, T2, T3>` / `OneOf<T1, T2, T3, T4>`.
+- `ProblemDetails.Type` now defaults to the MDN documentation URI for the status code
+  (e.g. `https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404`) instead of
+  `https://httpstatuses.io/{code}`. The formatter is configurable via
+  `ExceptionHandlingOptions.ProblemTypeUriFormatter` (middleware) or the new
+  `typeUriFormatter` parameter on `ExceptionBase.ToProblemDetails(...)`.
+- `Error` factory methods (`NotFound`, `Validation`, `Unauthorized`, `Forbidden`, `Conflict`,
+  `Unexpected(string)`) now throw `ArgumentNullException` on a null `message`, matching the
+  existing `Unexpected(Exception)` overload.
+- Dependabot updates scheduled `monthly` instead of `weekly`.
 - Pages workflow bumped to `actions/configure-pages@v6`, `actions/upload-pages-artifact@v5`,
   `actions/deploy-pages@v5`.
 - Documentation "What's Inside" links now correctly resolve under `/Grondo`.
