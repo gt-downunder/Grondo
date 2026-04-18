@@ -50,19 +50,19 @@ This makes Grondo primarily suitable for **ASP.NET Core applications** (web APIs
 
 ## What's Inside
 
-### [Extension Methods]({% link extensions.md %})
+### [Extension Methods]({{ site.baseurl }}{% link extensions.md %})
 
 30 extension method classes covering strings, collections, dates, JSON, HTTP, tasks, guards, async LINQ, memoization, and more.
 
-### [Custom Exceptions]({% link exceptions.md %})
+### [Custom Exceptions]({{ site.baseurl }}{% link exceptions.md %})
 
 13 HTTP-aware domain exceptions with status codes and message headers, including ValidationException with field-level errors.
 
-### [Utilities]({% link utilities.md %})
+### [Utilities]({{ site.baseurl }}{% link utilities.md %})
 
 Environment name constants and unique string generation.
 
-### [Types]({% link types.md %})
+### [Types]({{ site.baseurl }}{% link types.md %})
 
 `Result<T>`, `Result`, `Maybe<T>`, `Either<L,R>`, and `Validation<T>` — comprehensive functional programming types with LINQ query syntax support.
 
