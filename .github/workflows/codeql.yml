@@ -1,4 +1,4 @@
-﻿name: CodeQL Advanced
+name: CodeQL Advanced
 
 on:
   push:
@@ -35,7 +35,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Setup .NET SDK
       if: matrix.language == 'csharp'

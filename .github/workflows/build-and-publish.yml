@@ -1,4 +1,4 @@
-﻿name: Build Project and Publish NuGet Package
+name: Build Project and Publish NuGet Package
 
 on:
     workflow_dispatch:
@@ -25,7 +25,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         fetch-depth: 0  # Required for MinVer to read Git history
 
